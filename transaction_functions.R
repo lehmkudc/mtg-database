@@ -124,15 +124,16 @@ load_empty <- function(mydb){
 }
 
 show_binder <- function(user,password,dbname,host, binder, order='' ){
-   query <- sprintf(paste( 'SELECT DISTINCT count(*),CardName, SetCode, CMC, ColorName FROM',
+   query <- sprintf(paste( 'SELECT DISTINCT count(*),CardName, SetCode, Foil, Notes FROM',
                    binder, 'as o',
                    'JOIN all_cards as c ON o.CardID = c.CardID',
                    'JOIN all_codes as s ON o.SetID = s.SetID',
                    'JOIN color_codes as cc on c.ColorID = cc.ColorID',
-                   'GROUP BY CardName, SetCode;'))
+                   'GROUP BY CardName, SetCode, Foil, Notes;'))
    mydb <- connect(user,password,dbname,host)
    rs <- dbSendQuery( mydb, query )
    data <- fetch(rs)
+   data[,1] <- as.integer(data[,1])
    dbDisconnect(mydb)
    return( data )
 }

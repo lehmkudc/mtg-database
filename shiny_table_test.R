@@ -40,6 +40,16 @@ editTable <- function(DF, user,password,dbname,host){
            actionButton("to_trade", "To Trade Binder"),
            actionButton("to_wish", "To Wishlist")
         ),
+        # Editing Buttons
+        wellPanel(
+           h3("Edit Binders "),
+           actionButton("ed_play", "Edit My Binder"),
+           actionButton("ed_trade", "Edit Trade Binder"),
+           actionButton("ed_wish", "Edit Wishlist"),
+           br(),
+           actionButton("commit", "Commit Changes")
+        ),
+        
         # Emptying Buttons
         wellPanel(
            h3("Empty Binders (PLZ BE CAREFUL)"),
@@ -47,6 +57,7 @@ editTable <- function(DF, user,password,dbname,host){
            actionButton("em_trade", "Empty Trade Binder"),
            actionButton("em_wish", "Empty Wishlist")
         )
+        
 
       ),
       
@@ -63,6 +74,8 @@ editTable <- function(DF, user,password,dbname,host){
     )
   ))
 
+# ======================================================================= #  
+  
   server <- shinyServer(function(input, output) {
 
      # Reactive Values and initializations
@@ -115,7 +128,6 @@ editTable <- function(DF, user,password,dbname,host){
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
          from_table_to_binder(IP_address, finalDF, 'play_binder')
-         print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
          values[["play"]] <- show_binder(user,password,dbname,host, 'play_binder')
       }
@@ -125,7 +137,6 @@ editTable <- function(DF, user,password,dbname,host){
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
          from_table_to_binder(IP_address,finalDF,'trade_binder')
-         print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
          values[["trade"]] <- show_binder(user,password,dbname,host, 'trade_binder')
       }
@@ -135,11 +146,19 @@ editTable <- function(DF, user,password,dbname,host){
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
          from_table_to_binder(IP_address,finalDF,'wish_binder')
-         print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
          values[["wish"]] <- show_binder(user,password,dbname,host,'wish_binder')
       }
     })
+    
+    # Editing Buttons ===================================================
+    observeEvent( input$ed_play, {
+       values[["DF"]] <- show_binder(user,password,dbname,host,'play_binder')
+    })
+    
+    
+    
+    
     
     # Emptying Buttons ================================================
     observeEvent( input$em_play, {
