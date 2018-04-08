@@ -1,49 +1,46 @@
+rm(list = ls())
+
 source('mtg-database/transaction_functions.R')
+source('C:/Users/Dustin/Desktop/config.R')
+# For bug fixing, make sure that all connections are clear
+kill_connections(host)
 
 
-
-# DF <- data.frame(Value = 1:10, Status = TRUE, Name = LETTERS[1:10],
-#                     Date = seq(from = Sys.Date(), by = "days", length.out = 10),
-#                     stringsAsFactors = FALSE)
-kill_connections('192.168.1.147')
-
-# mydb <- connect('10.1.10.150')
-# # 
-# #points <- c(1,2,3,4,5)
-# #delete_pointed( points, 'trade_binder')
-# play <- select_binder(mydb, 'play_binder') 
-# # 
-# dbDisconnect(mydb)
-
+# Initialized dataframe for debugging.
 play <- data.frame( QTY = as.integer(c(3,2,0,0,0,0)), 
                   Name = c('Bomat Courier','Hazoret the Fervent','','','',''),
                   Set = c('KLD','AKH','','','',''),
                   Foil = c(F,T,T,F,F,F),
                   Notes = c('derp','','','','','')
 )
+# Large empty database for the hot table
 empty <- data.frame( QTY=as.integer(0), Name=rep('',20), Set = rep('',20),
                                     Foil=rep(FALSE,20), Notes=rep('',20))
-# play <- data.frame( QTY=as.integer(0), Name=rep('',20), Set = rep('',20),
-#                     foil=rep(FALSE,20), Notes=rep('',20))
 
-editTable <- function(DF, IP_address){
+# Encompassing the shiny app in a function for debugging
+editTable <- function(DF, user,password,dbname,host){
   ui <- shinyUI(fluidPage(
 
-    titlePanel("Edit and save a table"),
+    titlePanel("Dustin's Database"),
     sidebarLayout(
       sidebarPanel(
         helpText("Hello, my name is Dustin and this is my MTG Database.", 
                  "As you can see, this is a rough work in progress.", 
                  "Try not to add any storm crows!"),
 
-        br(), 
-
+        br(),
+        wellPanel(
+          actionButton("clear", "Clear Input Table") 
+        ),
+        
+        # Loading Buttons
         wellPanel(
            h3("Load into Binders"), 
            actionButton("to_play", "To My Binder"),
            actionButton("to_trade", "To Trade Binder"),
            actionButton("to_wish", "To Wishlist")
         ),
+        # Emptying Buttons
         wellPanel(
            h3("Empty Binders (PLZ BE CAREFUL)"),
            actionButton("em_play", "Empty My Binder"),
@@ -52,20 +49,29 @@ editTable <- function(DF, IP_address){
         )
 
       ),
-
+      
+      # Table Outputs on UI
       mainPanel(
-        rHandsontableOutput("hot")
- #       rHandsontableOutput("play")
+        rHandsontableOutput("hot"),
+        br(), h3('Owned Binder'),
+        rHandsontableOutput("play"),
+        br(), h3('Trade Binder'),
+        rHandsontableOutput("trade"),
+        br(), h3('Wishlist Binder'),
+        rHandsontableOutput("wish")
       )
     )
   ))
 
   server <- shinyServer(function(input, output) {
 
+     # Reactive Values and initializations
     values <- reactiveValues()
-    #values[["play"]] <- show_binder( IP_address, 'play_binder')
+    values[["play"]] <- show_binder( IP_address, 'play_binder')
+    values[["trade"]] <- show_binder( IP_address, 'trade_binder')
+    values[["wish"]] <- show_binder( IP_address, 'wish_binder')
 
-    ## Handsontable
+    # Editable Hot Table
     observe({
       if (!is.null(input$hot)) {
         DF = hot_to_r(input$hot)
@@ -78,25 +84,40 @@ editTable <- function(DF, IP_address){
       values[["DF"]] <- DF
     })
 
+    # Rendering Tables to output =====================================
     output$hot <- renderRHandsontable({
       DF <- values[["DF"]]
       if (!is.null(DF))
-        rhandsontable(DF, useTypes = T, stretchH = "all")
+        rhandsontable(DF, useTypes = T)
     })
     
-    # output$play <- renderRHandsontable({
-    #    Splay <- values[["play"]]
-    #    rhandsontable(Splay, useTypes = T, stretchH="all")
-    # })
+    output$play <- renderRHandsontable({
+       Splay <- values[["play"]]
+       rhandsontable(Splay, useTypes = T, stretchH="all")
+    })
+    output$trade <- renderRHandsontable({
+       Strade <- values[["trade"]]
+       rhandsontable(Strade, useTypes = T, stretchH="all")
+    })
+    output$wish <- renderRHandsontable({
+       Swish <- values[["wish"]]
+       rhandsontable(Swish, useTypes = T, stretchH="all")
+    })
 
-    ## Save 
+    
+    observeEvent( input$clear, {
+       values[["DF"]] <- empty
+    })
+    
+    
+    ## Loading Buttons ===============================================
     observeEvent(input$to_play, {
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
          from_table_to_binder(IP_address, finalDF, 'play_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
-         #values[["play"]] <- show_binder( IP_address, 'play_binder')
+         values[["play"]] <- show_binder( IP_address, 'play_binder')
       }
     })
     
@@ -106,6 +127,7 @@ editTable <- function(DF, IP_address){
          from_table_to_binder(IP_address,finalDF,'trade_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
+         values[["trade"]] <- show_binder( IP_address, 'trade_binder')
       }
     })
     
@@ -115,23 +137,28 @@ editTable <- function(DF, IP_address){
          from_table_to_binder(IP_address,finalDF,'wish_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
+         values[["wish"]] <- show_binder( IP_address, 'wish_binder')
       }
     })
     
+    # Emptying Buttons ================================================
     observeEvent( input$em_play, {
-       mydb <- connect(IP_address)
+       mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'play_binder')
        dbDisconnect(mydb)
+       values[["play"]] <- show_binder( IP_address, 'play_binder')
     })
     observeEvent( input$em_trade, {
-       mydb <- connect(IP_address)
+       mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'trade_binder')
        dbDisconnect(mydb)
+       values[["trade"]] <- show_binder( IP_address, 'trade_binder')
     })
     observeEvent( input$em_wish, {
-       mydb <- connect(IP_address)
+       mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'wish_binder')
        dbDisconnect(mydb)
+       values[["wish"]] <- show_binder( IP_address, 'wish_binder')
     })
     
     
@@ -145,4 +172,4 @@ editTable <- function(DF, IP_address){
 }
 
 
-editTable( play, '192.168.1.147' )
+editTable( play, user,password,dbname,host )
