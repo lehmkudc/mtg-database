@@ -67,9 +67,9 @@ editTable <- function(DF, user,password,dbname,host){
 
      # Reactive Values and initializations
     values <- reactiveValues()
-    values[["play"]] <- show_binder( IP_address, 'play_binder')
-    values[["trade"]] <- show_binder( IP_address, 'trade_binder')
-    values[["wish"]] <- show_binder( IP_address, 'wish_binder')
+    values[["play"]] <- show_binder( user,password,dbname,host, 'play_binder')
+    values[["trade"]] <- show_binder(user,password,dbname,host,  'trade_binder')
+    values[["wish"]] <- show_binder(user,password,dbname,host, 'wish_binder')
 
     # Editable Hot Table
     observe({
@@ -117,7 +117,7 @@ editTable <- function(DF, user,password,dbname,host){
          from_table_to_binder(IP_address, finalDF, 'play_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
-         values[["play"]] <- show_binder( IP_address, 'play_binder')
+         values[["play"]] <- show_binder(user,password,dbname,host, 'play_binder')
       }
     })
     
@@ -127,7 +127,7 @@ editTable <- function(DF, user,password,dbname,host){
          from_table_to_binder(IP_address,finalDF,'trade_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
-         values[["trade"]] <- show_binder( IP_address, 'trade_binder')
+         values[["trade"]] <- show_binder(user,password,dbname,host, 'trade_binder')
       }
     })
     
@@ -137,7 +137,7 @@ editTable <- function(DF, user,password,dbname,host){
          from_table_to_binder(IP_address,finalDF,'wish_binder')
          print( trim_dataframe(finalDF ))
          values[["DF"]] <- empty
-         values[["wish"]] <- show_binder( IP_address, 'wish_binder')
+         values[["wish"]] <- show_binder(user,password,dbname,host,'wish_binder')
       }
     })
     
@@ -146,19 +146,19 @@ editTable <- function(DF, user,password,dbname,host){
        mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'play_binder')
        dbDisconnect(mydb)
-       values[["play"]] <- show_binder( IP_address, 'play_binder')
+       values[["play"]] <- show_binder(user,password,dbname,host,'play_binder')
     })
     observeEvent( input$em_trade, {
        mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'trade_binder')
        dbDisconnect(mydb)
-       values[["trade"]] <- show_binder( IP_address, 'trade_binder')
+       values[["trade"]] <- show_binder(user,password,dbname,host,'trade_binder')
     })
     observeEvent( input$em_wish, {
        mydb <- connect(user,password,dbname,host)
        empty_binder(mydb, 'wish_binder')
        dbDisconnect(mydb)
-       values[["wish"]] <- show_binder( IP_address, 'wish_binder')
+       values[["wish"]] <- show_binder( user,password,dbname,host,'wish_binder')
     })
     
     

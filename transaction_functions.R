@@ -123,7 +123,7 @@ load_empty <- function(mydb){
    dbSendQuery(mydb, query)
 }
 
-show_binder <- function( IP_address, binder, order='' ){
+show_binder <- function(user,password,dbname,host, binder, order='' ){
    query <- sprintf(paste( 'SELECT DISTINCT count(*),CardName, SetCode, CMC, ColorName FROM',
                    binder, 'as o',
                    'JOIN all_cards as c ON o.CardID = c.CardID',
