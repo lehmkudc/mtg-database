@@ -10,8 +10,10 @@ t1 <- iconv(t, to = "ASCII//TRANSLIT")
 t2 <- gsub( '"', '', t1)
 t3 <- gsub( ' //.+', '', t2)
 
+t3[ grep( 'Our Market Research', t3) ] <- 'Our Market Research'
 
 
-#write( all, "mtg-database/card-names.json")
-df <- read.csv('mtg-database/all-cards.csv')
-grep( '"', df$CardName)
+
+write( t3, "mtg-database/card-names")
+
+x<- scan(  "mtg-database/card-names",what=character() )

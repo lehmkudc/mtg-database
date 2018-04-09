@@ -40,8 +40,7 @@ while ( end == F ){ # Per Page
       index <- index + 1
       card <- page$data[[i]]
       
-      x <- rep( 0, 9 )
-      #Name
+      x <- rep( 0, 5)
       
       
       if ( length(card$card_faces) == 0 ){
@@ -49,16 +48,8 @@ while ( end == F ){ # Per Page
          x[1] <- iconv( card$name, to = "ASCII//TRANSLIT")
          x[1] <- gsub( '"', '', x[1])
          x[1] <- gsub( ' //.+', '', x[1])
-         
-         x[3] <- iconv( card$type_line, to = "ASCII//TRANSLIT")
       
-         if ( length(card$colors)==0 ){
-            x[4] <- 'C'
-         } else {
-            x[4] <- paste0(unlist(card$colors), collapse ="")
-         }
-      
-         x[5] <- cat_color( card$colors, card$type_line )
+         x[2] <- cat_color( card$colors, card$type_line )
          
       } else {
          cf <- card$card_faces[[1]]
@@ -66,24 +57,19 @@ while ( end == F ){ # Per Page
          x[1] <- iconv( cf$name, to = "ASCII//TRANSLIT")
          x[1] <- gsub( '"', '', x[1])
          x[1] <- gsub( ' //.+', '', x[1])
-      
-         x[3] <- iconv( cf$type_line, to = "ASCII//TRANSLIT")
-      
-         if ( length(cf$colors)==0 ){
-            x[4] <- 'C'
-         } else {
-            x[4] <- paste0(unlist(cf$colors), collapse ="")
-         }
-      
-         x[5] <- cat_color( cf$colors, cf$type_line )
+   
+         x[2] <- cat_color( cf$colors, cf$type_line )
       }
       
-      x[2] <- card$cmc   
+      if ( card$cmc > 20 ){
+         x[3] <- 20
+      } else {
+         x[3] <- floor( card$cmc )
+      }
       
-      x[6] <- card$set
-      x[7] <- iconv( card$set_name, to = "ASCII//TRANSLIT")
-      x[8] <- iconv( card$rarity, to = "ASCII//TRANSLIT")
-      x[9] <- card$uri
+      x[4] <- iconv( card$set, to = "ASCII//TRANSLIT")
+#      x[4] <- iconv( card$set_name, to = "ASCII//TRANSLIT")
+      x[5] <- iconv( card$uri, to = "ASCII//TRANSLIT")
       
       storage[[index]] <- x
    }
@@ -91,14 +77,13 @@ while ( end == F ){ # Per Page
    if ( page$has_more == F ){
       end <- T
    } else {
-      page <- fromJSON(file= as.character(page$next_page))
+      page <- fromJSON(file= as.character(page$next_page) )
    }
    
 }
 
 df <- data.frame( matrix( unlist(storage), nrow=index, byrow =T) )
-colnames(df) <- c( 'CardName','CMC','TypeLine','Color','ColorID',
-                   'SetCode','SetName','Rarity','Uri')
+colnames(df) <- c( 'CardName','ColorID','CMC','SetCode','Uri')
 write.csv(x = df,file = 'mtg-database/all_cards2.csv',row.names = F)
 
 
