@@ -26,7 +26,8 @@ editTable <- function(DF, user,password,dbname,host){
 
         br(),
         wellPanel(
-          actionButton("clear", "Clear Input Table") 
+          actionButton("clear", "Clear Input Table"),
+          checkboxInput('ac_name',"Autocorrect Name")
         ),
         
         # Loading Buttons
@@ -97,9 +98,15 @@ editTable <- function(DF, user,password,dbname,host){
     # Rendering Tables to output =====================================
     output$hot <- renderRHandsontable({
        DF <- values[["DF"]]
-      if (!is.null(DF))
-         rhandsontable(DF, useTypes = T)%>% 
-         hot_col(col='Name', type ='autocomplete', source = name_source, strict = T)
+       if (!is.null(DF)){
+          if (input$ac_name){
+            rhandsontable(DF, useTypes = T)%>% 
+            hot_col(col='Name', type ='autocomplete', 
+                    source = name_source, strict = T)
+          } else {
+             rhandsontable(DF, useTypes = T)
+          }
+       }
     }) 
     
     output$play <- renderRHandsontable({
@@ -153,6 +160,14 @@ editTable <- function(DF, user,password,dbname,host){
     observeEvent( input$ed_play, {
        values[["DF"]] <- show_binder(user,password,dbname,host,'play_binder')
        values[["active"]] <- 'play_binder'
+    })
+    observeEvent( input$ed_trade, {
+       values[["DF"]] <- show_binder(user,password,dbname,host,'trade_binder')
+       values[["active"]] <- 'tradey_binder'
+    })
+    observeEvent( input$ed_wish, {
+       values[["DF"]] <- show_binder(user,password,dbname,host,'wish_binder')
+       values[["active"]] <- 'wish_binder'
     })
     observeEvent( input$commit, {
        print( 'button pressed')

@@ -13,7 +13,7 @@ t3 <- gsub( ' //.+', '', t2)
 t3[ grep( 'Our Market Research', t3) ] <- 'Our Market Research'
 
 
-
+t3 <- t3[ order( t3)]
 write( t3, "mtg-database/card-names")
 
-x<- scan(  "mtg-database/card-names",what=character() )
+x<- scan(  "mtg-database/card-names", what=character(),sep = '\n' )

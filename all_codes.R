@@ -22,3 +22,10 @@ colnames(df) <- c( 'SetCode','SetName','Digital')
 
 
 write.csv(x = df,file = 'mtg-database/all_codes.csv',row.names = F)
+
+
+
+
+write(df$SetName, 'mtg-database/set-names')
+
+x<- scan(  "mtg-database/set-names", what=character(),sep = '\n' )
