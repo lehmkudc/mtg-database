@@ -15,6 +15,8 @@ for (i in 1:length(all)){
    a <- all[[i]]
    x[1] <- i
    x[2] <- iconv( a$name, to = "ASCII//TRANSLIT")
+   x[2] <- gsub( '"', '', x[2])
+   x[2] <- gsub( ' //.+', '', x[2])
    
    am <- a$cmc
    if ( am > 20 ){
@@ -26,7 +28,7 @@ for (i in 1:length(all)){
    ac <- a$colors
    
    if ( length(ac) == 0 ){
-      if ( a$type == 'Land' ){
+      if ( length(grep( 'Land', a$type)) > 0 ){
          x[4] <- 7
       } else {
          x[4] <- 6
