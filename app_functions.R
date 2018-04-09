@@ -9,7 +9,9 @@ play <- data.frame( QTY = as.integer(c(3,2,0,0,0,0)),
 empty <- data.frame( QTY=as.integer(0), Name=rep('',20), Set = rep('',20),
                                     Foil=rep(FALSE,20), Notes=rep('',20))
 
-name_source <- scan(  "mtg-database/card-names",what=character() )
+name_source <- scan(  "mtg-database/card-names", what=character(),sep = '\n' )
+library(magrittr)
+
 
 editTable <- function(DF, user,password,dbname,host){
    
@@ -94,11 +96,11 @@ editTable <- function(DF, user,password,dbname,host){
 
     # Rendering Tables to output =====================================
     output$hot <- renderRHandsontable({
-      DF <- values[["DF"]]
+       DF <- values[["DF"]]
       if (!is.null(DF))
-        rhandsontable(DF, useTypes = T)
+         rhandsontable(DF, useTypes = T)%>% 
+         hot_col(col='Name', type ='autocomplete', source = name_source, strict = T)
     }) 
-    %>% hot_col(col='Name', type ='autocomplete', source = name_source, strict = T)
     
     output$play <- renderRHandsontable({
        Splay <- values[["play"]]
