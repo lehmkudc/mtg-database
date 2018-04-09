@@ -124,7 +124,7 @@ load_empty <- function(mydb){
 }
 
 show_binder <- function(user,password,dbname,host, binder, order='' ){
-   query <- sprintf(paste( 'SELECT DISTINCT count(*),CardName, SetCode, Foil, Notes FROM',
+   query <- sprintf(paste( 'SELECT DISTINCT count(*) as QTY,CardName as Name, SetCode, Foil, Notes FROM',
                    binder, 'as o',
                    'JOIN all_cards as c ON o.CardID = c.CardID',
                    'JOIN all_codes as s ON o.SetID = s.SetID',
@@ -181,13 +181,19 @@ delete_pointed <- function( points, binder ){
    dbSendQuery( mydb, query)
 }
 
-from_table_to_binder <- function(IP_address, df, binder){
+from_table_to_binder <- function(user,password,dbname,host, df, binder){
+   print('function called')
    finalDF <- trim_dataframe(df)
+   print('dataframe trimmed')
+   print( finalDF)
    cvt <- cvt_cardlist(finalDF)
+   print( 'converted')
    mydb <- connect(user,password,dbname,host)
+   print( 'connected')
    load_all(mydb,cvt)
+   print( 'loaded')
    unload(mydb, binder)
-   #values[["play"]] <- show_binder( mydb, 'play_binder')
+   print( 'unloaded')
    dbDisconnect(mydb)
 }
 

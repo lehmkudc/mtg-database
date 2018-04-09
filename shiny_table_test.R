@@ -19,6 +19,7 @@ empty <- data.frame( QTY=as.integer(0), Name=rep('',20), Set = rep('',20),
 
 # Encompassing the shiny app in a function for debugging
 editTable <- function(DF, user,password,dbname,host){
+   
   ui <- shinyUI(fluidPage(
 
     titlePanel("Dustin's Database"),
@@ -83,7 +84,8 @@ editTable <- function(DF, user,password,dbname,host){
     values[["play"]] <- show_binder( user,password,dbname,host, 'play_binder')
     values[["trade"]] <- show_binder(user,password,dbname,host,  'trade_binder')
     values[["wish"]] <- show_binder(user,password,dbname,host, 'wish_binder')
-
+    values[["active"]] <- ''
+    
     # Editable Hot Table
     observe({
       if (!is.null(input$hot)) {
@@ -127,7 +129,7 @@ editTable <- function(DF, user,password,dbname,host){
     observeEvent(input$to_play, {
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
-         from_table_to_binder(IP_address, finalDF, 'play_binder')
+         from_table_to_binder(user,password,dbname,host, finalDF, 'play_binder')
          values[["DF"]] <- empty
          values[["play"]] <- show_binder(user,password,dbname,host, 'play_binder')
       }
@@ -136,7 +138,7 @@ editTable <- function(DF, user,password,dbname,host){
     observeEvent(input$to_trade, {
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
-         from_table_to_binder(IP_address,finalDF,'trade_binder')
+         from_table_to_binder(user,password,dbname,host,finalDF,'trade_binder')
          values[["DF"]] <- empty
          values[["trade"]] <- show_binder(user,password,dbname,host, 'trade_binder')
       }
@@ -145,7 +147,7 @@ editTable <- function(DF, user,password,dbname,host){
     observeEvent(input$to_wish, {
       finalDF <- isolate(values[["DF"]])
       if( nrow(trim_dataframe(finalDF)) > 0 ){
-         from_table_to_binder(IP_address,finalDF,'wish_binder')
+         from_table_to_binder(user,password,dbname,host,finalDF,'wish_binder')
          values[["DF"]] <- empty
          values[["wish"]] <- show_binder(user,password,dbname,host,'wish_binder')
       }
@@ -154,8 +156,32 @@ editTable <- function(DF, user,password,dbname,host){
     # Editing Buttons ===================================================
     observeEvent( input$ed_play, {
        values[["DF"]] <- show_binder(user,password,dbname,host,'play_binder')
+       values[["active"]] <- 'play_binder'
     })
-    
+    observeEvent( input$commit, {
+       print( 'button pressed')
+       if (values[["active"]] != ''){
+          print( 'in loop')
+          mydb <- connect(user,password,dbname,host)
+          print( 'connected')
+          empty_binder( mydb, values[["active"]] )
+          print( 'binder emptied')
+          dbDisconnect(mydb)
+          print( 'disconected')
+          finalDF <- isolate(values[["DF"]])
+          print( finalDF )
+          from_table_to_binder(user,password,dbname,host, finalDF, values[["active"]])
+          print( 'moved')
+          values[["DF"]] <- empty
+          values[["play"]] <- show_binder(user,password,dbname,host,'play_binder')
+          values[["trade"]] <- show_binder(user,password,dbname,host,'trade_binder')
+          values[["wish"]] <- show_binder(user,password,dbname,host,'wish_binder')
+          
+          
+          values[["active"]] <- ''
+       }
+       
+    })
     
     
     
