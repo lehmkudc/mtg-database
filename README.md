@@ -56,5 +56,21 @@ if the input table is accidentally deleted, the changes are not committed.
 ## Q: What is your database Schema?
 A: Binders are their own tables where individual cards are stored (importantly not quantity like the app would suggest).  
 THere is a "loading_zone" where card information is temporarily stored before being loaded into a binder. While this is in 
-general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.
+general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.  
+![Here's a Diagram](db_schema.png)
 
+## Q: What do you plan on implementing in the future?
+A: Quite a lot:
+* Using Scryfall API to access approximate price of cards. This requires adding some sort of caching measure to store known prices for the day.
+* Getting a version of the App accessible to the web for demonstration purposes.
+* Creating a "Binder View" app that cleanly displays images of the cards as well as their prices.
+* Creating a "Cost to Complete" app that determines the cards as well as their price that are required to finish a deck based
+on what cards are available in play and trade binders.
+* Creating a "Trade Table" app that keeps track of prices of desired cards in both sides of a trade.
+
+## Q: I like your work! How can I contact you for professional work?
+A: Thank you so much! My business email is LEHMKUDC@gmail.com. I am currently seeking full-time employment in a large metro area either as a long-term employee or as an Intern. I am always happy to have a chat with other folks who enjoy this type of thing even if it's not
+directly discussing employment.
+
+
+Thank you for taking the time to check out my work as well as my casual readme about it!
