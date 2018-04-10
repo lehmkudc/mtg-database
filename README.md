@@ -42,3 +42,19 @@ It sources my:
 *config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
 
 ## Q: What does your app look like?
+A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](app_screenshot.png)
+
+## Q: What can you do with the app?
+A: Currently:
+* Add cards to the Input table and add all of them to the desired binder. You may toggle autocompletion for card name and set name.
+* Clear the table all at once.
+* Go into "edit mode" by selecting a binder, editing certain fields of the data table, and then committing those changes. 
+if the input table is accidentally deleted, the changes are not committed.
+* View the current quantities of cards in each of 3 binders.
+* Empty all cards in a given binder (soon to be discontinued)
+
+## Q: What is your database Schema?
+A: Binders are their own tables where individual cards are stored (importantly not quantity like the app would suggest).  
+THere is a "loading_zone" where card information is temporarily stored before being loaded into a binder. While this is in 
+general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.
+
