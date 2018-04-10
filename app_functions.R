@@ -6,10 +6,11 @@ play <- data.frame( QTY = as.integer(c(3,2,0,0,0,0)),
                   Notes = c('derp','','','','','')
 )
 # Large empty database for the hot table
-empty <- data.frame( QTY=as.integer(0), Name=rep('',20), Set = rep('',20),
+empty <- data.frame( QTY=as.integer(0), Name=rep('',20), SetName = rep('',20),
                                     Foil=rep(FALSE,20), Notes=rep('',20))
 
 name_source <- scan(  "mtg-database/card-names", what=character(),sep = '\n' )
+set_source <- scan(  "mtg-database/set-names", what=character(),sep = '\n' )
 library(magrittr)
 
 
@@ -27,7 +28,8 @@ editTable <- function(DF, user,password,dbname,host){
         br(),
         wellPanel(
           actionButton("clear", "Clear Input Table"),
-          checkboxInput('ac_name',"Autocorrect Name")
+          checkboxInput('ac_name',"Autocorrect Name"),
+          checkboxInput('ac_set',"Autocorrect Set")
         ),
         
         # Loading Buttons
@@ -99,10 +101,20 @@ editTable <- function(DF, user,password,dbname,host){
     output$hot <- renderRHandsontable({
        DF <- values[["DF"]]
        if (!is.null(DF)){
-          if (input$ac_name){
+          if (input$ac_name & input$ac_set){
             rhandsontable(DF, useTypes = T)%>% 
             hot_col(col='Name', type ='autocomplete', 
-                    source = name_source, strict = T)
+                    source = name_source, strict = T)%>%
+            hot_col(col='SetName', type ='autocomplete',
+                    source = set_source, strict = T)
+          } else if (input$ac_name & !input$ac_set) {
+             rhandsontable(DF, useTypes = T)%>% 
+                hot_col(col='Name', type ='autocomplete',
+                        source = name_source, strict = T)
+          } else if (!input$ac_name & input$ac_set) {
+             rhandsontable(DF, useTypes = T)%>% 
+                hot_col(col='SetName', type ='autocomplete',
+                        source = set_source, strict = T)
           } else {
              rhandsontable(DF, useTypes = T)
           }
@@ -111,20 +123,21 @@ editTable <- function(DF, user,password,dbname,host){
     
     output$play <- renderRHandsontable({
        Splay <- values[["play"]]
-       rhandsontable(Splay, useTypes = T, stretchH="all")
+       rhandsontable(Splay, readOnly = T, useTypes = T, stretchH="all")
     })
     output$trade <- renderRHandsontable({
        Strade <- values[["trade"]]
-       rhandsontable(Strade, useTypes = T, stretchH="all")
+       rhandsontable(Strade, readOnly = T, useTypes = T, stretchH="all")
     })
     output$wish <- renderRHandsontable({
        Swish <- values[["wish"]]
-       rhandsontable(Swish, useTypes = T, stretchH="all")
+       rhandsontable(Swish, readOnly = T, useTypes = T, stretchH="all")
     })
 
     
     observeEvent( input$clear, {
        values[["DF"]] <- empty
+       values[['active']] <- ''
     })
     
     
@@ -170,19 +183,12 @@ editTable <- function(DF, user,password,dbname,host){
        values[["active"]] <- 'wish_binder'
     })
     observeEvent( input$commit, {
-       print( 'button pressed')
        if (values[["active"]] != ''){
-          print( 'in loop')
           mydb <- connect(user,password,dbname,host)
-          print( 'connected')
           empty_binder( mydb, values[["active"]] )
-          print( 'binder emptied')
           dbDisconnect(mydb)
-          print( 'disconected')
           finalDF <- isolate(values[["DF"]])
-          print( finalDF )
           from_table_to_binder(user,password,dbname,host, finalDF, values[["active"]])
-          print( 'moved')
           values[["DF"]] <- empty
           values[["play"]] <- show_binder(user,password,dbname,host,'play_binder')
           values[["trade"]] <- show_binder(user,password,dbname,host,'trade_binder')

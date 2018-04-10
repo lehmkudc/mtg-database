@@ -134,6 +134,7 @@ show_binder <- function(user,password,dbname,host, binder, order='' ){
    rs <- dbSendQuery( mydb, query )
    data <- fetch(rs)
    data[,1] <- as.integer(data[,1])
+   data[,4] <- as.logical(data[,4])
    dbDisconnect(mydb)
    return( data )
 }
@@ -145,41 +146,41 @@ select_binder <- function( mydb,binder, order='' ){
    return(data)
 }
 
-load_pointed <- function( points, binder ){
-   if ( binder == 'play_binder'){
-      id <- 'playID'
-   } else if ( binder == 'trade_binder'){
-      id <- 'tradeID'
-   } else if ( binder == 'wish_binder'){
-      id <- 'wishID'
-   }
-   
-   query <- paste('INSERT INTO loading_zone (CardName, SetCode, Foil, Notes)',
-                  'SELECT CardName, SetCode,Foil, Notes FROM',
-                  binder,'as o',
-                  'JOIN all_cards as c ON o.CardID = c.CardID',
-                  'JOIN all_codes as s ON o.SetID = s.SetID',
-                  'WHERE', id, 'IN (',
-                  paste(points, collapse = ','), ');'
-   )
-   dbSendQuery( mydb, query)
-}
-
-delete_pointed <- function( points, binder ){
-   if ( binder == 'play_binder'){
-      id <- 'playID'
-   } else if ( binder == 'trade_binder'){
-      id <- 'tradeID'
-   } else if ( binder == 'wish_binder'){
-      id <- 'wishID'
-   }
-   
-   query <- paste('DELETE FROM', binder,'WHERE',
-                  id, 'IN (',
-                  paste( points, collapse = ','), ');'
-   )
-   dbSendQuery( mydb, query)
-}
+# load_pointed <- function( points, binder ){
+#    if ( binder == 'play_binder'){
+#       id <- 'playID'
+#    } else if ( binder == 'trade_binder'){
+#       id <- 'tradeID'
+#    } else if ( binder == 'wish_binder'){
+#       id <- 'wishID'
+#    }
+#    
+#    query <- paste('INSERT INTO loading_zone (CardName, SetCode, Foil, Notes)',
+#                   'SELECT CardName, SetCode,Foil, Notes FROM',
+#                   binder,'as o',
+#                   'JOIN all_cards as c ON o.CardID = c.CardID',
+#                   'JOIN all_codes as s ON o.SetID = s.SetID',
+#                   'WHERE', id, 'IN (',
+#                   paste(points, collapse = ','), ');'
+#    )
+#    dbSendQuery( mydb, query)
+# }
+# 
+# delete_pointed <- function( points, binder ){
+#    if ( binder == 'play_binder'){
+#       id <- 'playID'
+#    } else if ( binder == 'trade_binder'){
+#       id <- 'tradeID'
+#    } else if ( binder == 'wish_binder'){
+#       id <- 'wishID'
+#    }
+#    
+#    query <- paste('DELETE FROM', binder,'WHERE',
+#                   id, 'IN (',
+#                   paste( points, collapse = ','), ');'
+#    )
+#    dbSendQuery( mydb, query)
+# }
 
 from_table_to_binder <- function(user,password,dbname,host, df, binder){
    print('function called')
