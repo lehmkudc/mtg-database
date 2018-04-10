@@ -84,15 +84,15 @@ cvt_cardlist <- function( cardlist ){
    return( out )
 }
 
-load <- function( mydb, card_name, set_code, foil, notes){
+load <- function( mydb, card_name, set_name, foil, notes){
    #mydb <- connect()
    card_name <- paste0('"',card_name,'"')
-   set_code <- paste0('"',set_code,'"')
+   set_name <- paste0('"',set_name,'"')
    notes <- paste0('"',notes,'"')
    
    query <- paste( 'INSERT INTO loading_zone',
-                   '(CardName, SetCode, Foil, Notes) VALUES(',
-                   card_name, ',',set_code,',',foil,',',notes,');' )
+                   '(CardName, SetName, Foil, Notes) VALUES(',
+                   card_name, ',',set_name,',',foil,',',notes,');' )
    
    dbSendQuery( mydb, query)
    #dbDisconnect( mydb )
@@ -111,7 +111,7 @@ unload <- function(mydb, binder ){
                    'SELECT CardID, SetID, Foil, Notes FROM',
                    'magic.loading_zone as l',
                    'JOIN all_cards as c ON l.CardName = c.CardName',
-                   'JOIN all_codes as s ON l.SetCode = s.SetCode);')
+                   'JOIN all_codes as s ON l.SetName = s.SetName);')
    dbSendQuery(mydb, query)
    
    load_empty(mydb)
@@ -124,12 +124,12 @@ load_empty <- function(mydb){
 }
 
 show_binder <- function(user,password,dbname,host, binder, order='' ){
-   query <- sprintf(paste( 'SELECT DISTINCT count(*) as QTY,CardName as Name, SetCode, Foil, Notes FROM',
+   query <- sprintf(paste( 'SELECT DISTINCT count(*) as QTY,CardName as Name, SetName, Foil, Notes FROM',
                    binder, 'as o',
                    'JOIN all_cards as c ON o.CardID = c.CardID',
                    'JOIN all_codes as s ON o.SetID = s.SetID',
                    'JOIN color_codes as cc on c.ColorID = cc.ColorID',
-                   'GROUP BY CardName, SetCode, Foil, Notes;'))
+                   'GROUP BY CardName, SetName, Foil, Notes;'))
    mydb <- connect(user,password,dbname,host)
    rs <- dbSendQuery( mydb, query )
    data <- fetch(rs)

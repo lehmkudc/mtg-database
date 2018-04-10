@@ -6,4 +6,4 @@ source('mtg-database/app_functions.R')
 
 kill_connections(host)
 
-editTable( play, user,password,dbname,host )
+editTable( empty, user,password,dbname,host )

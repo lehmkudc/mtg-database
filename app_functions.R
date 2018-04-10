@@ -163,7 +163,7 @@ editTable <- function(DF, user,password,dbname,host){
     })
     observeEvent( input$ed_trade, {
        values[["DF"]] <- show_binder(user,password,dbname,host,'trade_binder')
-       values[["active"]] <- 'tradey_binder'
+       values[["active"]] <- 'trade_binder'
     })
     observeEvent( input$ed_wish, {
        values[["DF"]] <- show_binder(user,password,dbname,host,'wish_binder')
