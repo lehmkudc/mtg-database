@@ -24,9 +24,9 @@ but the actual price of these cards varies depending on the market.
 
 ## Q: Why make your own app when there are plenty available with more features?
 A: I have plenty of reasons. In no particular order:
-*This is fun for me. I enjoy data management and coding in R and have been looking for a good project as an excuse to get used to RShiny.
-*Making my own app gives me more freedom with implementing features like autocompletion and inputing cards as tables.
-*I wanted a solid SQL project for my portfolio
+* This is fun for me. I enjoy data management and coding in R and have been looking for a good project as an excuse to get used to RShiny.
+* Making my own app gives me more freedom with implementing features like autocompletion and inputing cards as tables.
+* I wanted a solid SQL project for my portfolio
 
 ## Q: So overall how does this work?
 A: The app as coded above interacts with a mySQL server database. 
@@ -37,9 +37,9 @@ Ideally, The database can be maintained and edited by the user with __only__ the
 ## Q: How do you run the app?
 A: Currently, the app is only able to be run on my laptop for mySQL permissions sake. The file only_app.R once sourced opens the app. 
 It sources my: 
-*transaction_functions.R file which holds my r code for interacitng with SQL directly
-*app_functions.R file which holds the nitty-gritty code for the app in question, as well as some useful constants.
-*config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
+* transaction_functions.R file which holds my r code for interacitng with SQL directly
+* app_functions.R file which holds the nitty-gritty code for the app in question, as well as some useful constants.
+* config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
 
 ## Q: What does your app look like?
 A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](app_screenshot.png)
