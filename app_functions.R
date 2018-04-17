@@ -122,16 +122,22 @@ editTable <- function(DF, user,password,dbname,host){
     }) 
     
     output$play <- renderRHandsontable({
-       Splay <- values[["play"]]
-       rhandsontable(Splay, readOnly = T, useTypes = T, stretchH="all")
+       if (!is.null( values[["play"]] )){
+            Splay <- values[["play"]]
+            rhandsontable(Splay, readOnly = T, useTypes = T, stretchH="all")
+       }
     })
     output$trade <- renderRHandsontable({
-       Strade <- values[["trade"]]
-       rhandsontable(Strade, readOnly = T, useTypes = T, stretchH="all")
+       if (!is.null( values[["trade"]] )){
+         Strade <- values[["trade"]]
+         rhandsontable(Strade, readOnly = T, useTypes = T, stretchH="all")
+       }
     })
     output$wish <- renderRHandsontable({
-       Swish <- values[["wish"]]
-       rhandsontable(Swish, readOnly = T, useTypes = T, stretchH="all")
+       if (!is.null( values[["wish"]] )){
+         Swish <- values[["wish"]]
+         rhandsontable(Swish, readOnly = T, useTypes = T, stretchH="all")
+       }
     })
 
     
@@ -182,6 +188,7 @@ editTable <- function(DF, user,password,dbname,host){
        values[["DF"]] <- show_binder(user,password,dbname,host,'wish_binder')
        values[["active"]] <- 'wish_binder'
     })
+    
     observeEvent( input$commit, {
        if (values[["active"]] != ''){
           mydb <- connect(user,password,dbname,host)
@@ -193,8 +200,6 @@ editTable <- function(DF, user,password,dbname,host){
           values[["play"]] <- show_binder(user,password,dbname,host,'play_binder')
           values[["trade"]] <- show_binder(user,password,dbname,host,'trade_binder')
           values[["wish"]] <- show_binder(user,password,dbname,host,'wish_binder')
-          
-          
           values[["active"]] <- ''
        }
        
