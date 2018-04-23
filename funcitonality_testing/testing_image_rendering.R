@@ -29,8 +29,8 @@ server <- function(input, output, session) {
    })
 }
 
-fuck_you <- function(){
+actual_app <- function(){
    shinyApp(ui = ui, server = server)
 }
 
-fuck_you()
+actual_app()
