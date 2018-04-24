@@ -12,13 +12,12 @@ for ( i in 1:length(all) ){
    a <- all[[i]]
    x[1] <- a$code
    x[2] <- a$name
-   x[3] <- ifelse( a$digital == FALSE, 0, 1)
    
    converted[[i]] <- x
 }
 
 df <- data.frame( matrix( unlist(converted), nrow=length(all), byrow =T) )
-colnames(df) <- c( 'SetCode','SetName','Digital')
+colnames(df) <- c( 'SetCode','SetName')
 
 
 write.csv(x = df,file = 'mtg-database/all_codes.csv',row.names = F)

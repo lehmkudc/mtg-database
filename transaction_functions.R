@@ -3,7 +3,7 @@ library(RMySQL)
 library(rhandsontable)
 library(shiny)
 
-connect <- function(user,password,dbname,host){
+connect <- function(){
    mydb <- dbConnect( MySQL(), user =user, 
                       password = password,
                       dbname =dbname,
@@ -18,7 +18,7 @@ connect <- function(user,password,dbname,host){
 #    
 #    query <-paste(
 #    "INSERT INTO owned_cards ( CardID, SetID, location, notes)", 
-#    "VALUES(( SELECT CardID FROM magic.all_cards WHERE CardName =",
+#    "VALUES(( SELECT CardID FROM magic.all_cards2 WHERE CardName =",
 #    card_name,
 #    "),( SELECT SetID FROM magic.all_sets WHERE ShortName =", 
 #    set_name, "),",
@@ -42,7 +42,7 @@ connect <- function(user,password,dbname,host){
 #    
 #    query <-paste(
 #    "INSERT INTO desired_cards ( CardID, SetID, location, notes)", 
-#    "VALUES(( SELECT CardID FROM magic.all_cards WHERE CardName =",
+#    "VALUES(( SELECT CardID FROM magic.all_cards2 WHERE CardName =",
 #    card_name,
 #    "),( SELECT SetID FROM magic.all_sets WHERE ShortName =", 
 #    set_name, "),",
@@ -110,7 +110,7 @@ unload <- function(mydb, binder ){
                    '(CardID, SetID, Foil, Notes) (',
                    'SELECT CardID, SetID, Foil, Notes FROM',
                    'magic.loading_zone as l',
-                   'JOIN all_cards as c ON l.CardName = c.CardName',
+                   'JOIN all_cards2 as c ON l.CardName = c.CardName',
                    'JOIN all_codes as s ON l.SetName = s.SetName);')
    dbSendQuery(mydb, query)
    
@@ -126,7 +126,7 @@ load_empty <- function(mydb){
 show_binder <- function(user,password,dbname,host, binder, order='' ){
    query <- sprintf(paste( 'SELECT DISTINCT count(*) as QTY,CardName as Name, SetName, Foil, Notes FROM',
                    binder, 'as o',
-                   'JOIN all_cards as c ON o.CardID = c.CardID',
+                   'JOIN all_cards2 as c ON o.CardID = c.CardID',
                    'JOIN all_codes as s ON o.SetID = s.SetID',
                    'JOIN color_codes as cc on c.ColorID = cc.ColorID',
                    'GROUP BY CardName, SetName, Foil, Notes;'))
@@ -158,7 +158,7 @@ select_binder <- function( mydb,binder, order='' ){
 #    query <- paste('INSERT INTO loading_zone (CardName, SetCode, Foil, Notes)',
 #                   'SELECT CardName, SetCode,Foil, Notes FROM',
 #                   binder,'as o',
-#                   'JOIN all_cards as c ON o.CardID = c.CardID',
+#                   'JOIN all_cards2 as c ON o.CardID = c.CardID',
 #                   'JOIN all_codes as s ON o.SetID = s.SetID',
 #                   'WHERE', id, 'IN (',
 #                   paste(points, collapse = ','), ');'
