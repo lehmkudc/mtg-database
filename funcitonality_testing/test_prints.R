@@ -14,14 +14,11 @@ set_code <- 'unh'
 page <- fromJSON( file = api )
 
 end <- F
-index <- 0
 
 while ( end == F ){ # Per Page
    N_cards <- length( page$data )
    
    for (i in 1:N_cards){ # For Each Card
-      
-      index <- index + 1
       card <- page$data[[i]]
       
       x <- rep( 0, 4 )

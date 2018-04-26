@@ -210,8 +210,8 @@ empty_binder <- function( mydb, binder){
    dbSendQuery(mydb, query)
 }
 
-kill_connections <- function( IP_address){
-   mydb <- connect(user,password,dbname,host)
+kill_connections <- function(){
+   mydb <- connect()
    dbDisconnect(mydb)
 }
 
