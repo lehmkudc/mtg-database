@@ -172,7 +172,7 @@ update_sets <- function(){
 
 #=====================================================================
 
-update_sets()
+# update_sets()
 # SELECT statement isnt 
 
 # conn <- connect()

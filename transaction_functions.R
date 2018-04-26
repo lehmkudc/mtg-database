@@ -11,50 +11,6 @@ connect <- function(){
    return( mydb )
 }
 
-# own_card <- function( card_name, set_name, status, notes){
-#    card_name <- paste0("'",card_name,"'")
-#    set_name <- paste0("'",set_name,"'")
-#    notes <- paste0("'",notes,"'")
-#    
-#    query <-paste(
-#    "INSERT INTO owned_cards ( CardID, SetID, location, notes)", 
-#    "VALUES(( SELECT CardID FROM magic.all_cards2 WHERE CardName =",
-#    card_name,
-#    "),( SELECT SetID FROM magic.all_sets WHERE ShortName =", 
-#    set_name, "),",
-#    status, ",",
-#    notes,
-#    ");", sep=' ')
-#    
-#    dbSendQuery( mydb, query)
-#    dbDisconnect(mydb)
-#    
-# }
-# 
-# wish_card <- function( card_name, set_name, status, notes){
-#    mydb <- dbConnect( MySQL(), user='desktop', 
-#                       password='Lucied!3',
-#                       dbname='magic',
-#                       host='192.168.1.147' )
-#    card_name <- paste0("'",card_name,"'")
-#    set_name <- paste0("'",set_name,"'")
-#    notes <- paste0("'",notes,"'")
-#    
-#    query <-paste(
-#    "INSERT INTO desired_cards ( CardID, SetID, location, notes)", 
-#    "VALUES(( SELECT CardID FROM magic.all_cards2 WHERE CardName =",
-#    card_name,
-#    "),( SELECT SetID FROM magic.all_sets WHERE ShortName =", 
-#    set_name, "),",
-#    status, ",",
-#    notes,
-#    ");", sep=' ')
-#    
-#    dbSendQuery( mydb, query)
-#    dbDisconnect(mydb)
-#    
-#    
-# }
 
 cvt_cardlist <- function( cardlist ){
    if ( is.character(cardlist) & length(cardlist) == 1 ){
@@ -84,6 +40,21 @@ cvt_cardlist <- function( cardlist ){
    return( out )
 }
 
+load <- function( conn, card_name, set_name, foil=0, notes){
+   card_name <- paste0('"',card_name,'"')
+   set_name <- paste0('"',set_name,'"')
+   notes <- paste0('"',notes,'"')
+   
+   q <- paste( 'INSERT INTO load_zone (PrintID, Foil, Notes)',
+               'SELECT (SELECT PrintID FROM all_prints',
+               'WHERE CardID = (SELECT CardID FROM all_cards',
+               'WHERE CardName = ', card_name, ')',
+               'AND SetID = (SELECT SetID FROM all_sets ',
+               'WHERE SetName = ', set_name, ')),',
+               foil, ',', notes, ';')
+   dbSendQuery( conn, q )
+}
+   
 load <- function( mydb, card_name, set_name, foil, notes){
    #mydb <- connect()
    card_name <- paste0('"',card_name,'"')
@@ -98,12 +69,22 @@ load <- function( mydb, card_name, set_name, foil, notes){
    #dbDisconnect( mydb )
 }
 
+load_all <- function( conn, df_flat ){
+   N <- nrow( df_flat )
+   for (i in 1:N){
+      load( conn, df_flat$CardName, df_flat$SetName, df_flat$Foil, df_flat$Notes )
+   }
+   
+}
+
 load_all <- function(mydb, lz){
    N <- nrow(lz)
    for (i in 1:N){
       load( mydb, lz[i,1], lz[i,2],lz[1,3],lz[1,4])
    }
 }
+
+
 
 unload <- function(mydb, binder ){
    query <- paste( 'INSERT INTO', binder,
@@ -146,42 +127,6 @@ select_binder <- function( mydb,binder, order='' ){
    return(data)
 }
 
-# load_pointed <- function( points, binder ){
-#    if ( binder == 'play_binder'){
-#       id <- 'playID'
-#    } else if ( binder == 'trade_binder'){
-#       id <- 'tradeID'
-#    } else if ( binder == 'wish_binder'){
-#       id <- 'wishID'
-#    }
-#    
-#    query <- paste('INSERT INTO loading_zone (CardName, SetCode, Foil, Notes)',
-#                   'SELECT CardName, SetCode,Foil, Notes FROM',
-#                   binder,'as o',
-#                   'JOIN all_cards2 as c ON o.CardID = c.CardID',
-#                   'JOIN all_codes as s ON o.SetID = s.SetID',
-#                   'WHERE', id, 'IN (',
-#                   paste(points, collapse = ','), ');'
-#    )
-#    dbSendQuery( mydb, query)
-# }
-# 
-# delete_pointed <- function( points, binder ){
-#    if ( binder == 'play_binder'){
-#       id <- 'playID'
-#    } else if ( binder == 'trade_binder'){
-#       id <- 'tradeID'
-#    } else if ( binder == 'wish_binder'){
-#       id <- 'wishID'
-#    }
-#    
-#    query <- paste('DELETE FROM', binder,'WHERE',
-#                   id, 'IN (',
-#                   paste( points, collapse = ','), ');'
-#    )
-#    dbSendQuery( mydb, query)
-# }
-
 from_table_to_binder <- function(user,password,dbname,host, df, binder){
    print('function called')
    finalDF <- trim_dataframe(df)
@@ -214,13 +159,3 @@ kill_connections <- function(){
    mydb <- connect()
    dbDisconnect(mydb)
 }
-
-# 
-# # 
-# mydb <- connect('10.1.10.166')
-# # 
-# points <- c(1,2,3,4,5)
-# delete_pointed( points, 'trade_binder')
-# # play <- select_binder(mydb, 'play_binder') 
-# # 
-# dbDisconnect(mydb)
