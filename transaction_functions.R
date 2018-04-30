@@ -173,7 +173,7 @@ show_binder <- function(user,password,dbname,host, binder, order='' ){
                    'JOIN all_codes as s ON o.SetID = s.SetID',
                    'JOIN color_codes as cc on c.ColorID = cc.ColorID',
                    'GROUP BY CardName, SetName, Foil, Notes;'))
-   mydb <- connect(user,password,dbname,host)
+   mydb <- connect()
    rs <- dbSendQuery( mydb, query )
    data <- fetch(rs)
    data[,1] <- as.integer(data[,1])
