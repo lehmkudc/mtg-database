@@ -16,7 +16,7 @@ connect <- function(){
 short_to_long <- function( df_short ){
    # Convert a decklist-style dataframe to an itemized list
    
-   total    <- sum( df$QTY )
+   total    <- sum( df_short$QTY )
    CardName <- rep( 0, total )
    SetName  <- rep( NA, total )
    Foil     <- rep( 0, total )
@@ -54,6 +54,7 @@ load <- function( conn, card_name, set_name, foil=0, notes=''){
                'AND SetID = (SELECT SetID FROM all_sets ',
                'WHERE SetName = ', set_name, ')),',
                foil, ',', notes, ';')
+   #print( q )
    
    dbSendQuery( conn, q )
 }
@@ -64,8 +65,8 @@ load_all <- function( conn, df_long ){
    
    N <- nrow( df_long )
    for (i in 1:N){
-      load( conn, df_long$CardName, df_long$SetName, 
-            df_long$Foil, df_long$Notes )
+      load( conn, df_long$CardName[i], df_long$SetName[i], 
+            foil = df_long$Foil[i], notes = df_long$Notes[i] )
    }
 }
 
@@ -99,7 +100,8 @@ binder_to_short <- function( conn, binder ){
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY PrintID, Foil, Notes;' )
+               'GROUP BY CardName, SetName, Foil, Notes;' )
+   print( q )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
@@ -110,11 +112,11 @@ binder_to_short <- function( conn, binder ){
 
 
 
-short_to_binder <- function( conn, df_short, binder ){
+short_to_binder <- function( df_short, binder ){
    # Take a decklists and import the data to a chosen binder by
    #    Using the loading zone
    df_short <- trim_dataframe( df_short )
-   df_long <- short_to_long
+   df_long <- short_to_long( df_short )
    conn <- connect()
    load_all( conn, df_long )
    load_to_binder( conn, binder )
@@ -126,8 +128,8 @@ short_to_binder <- function( conn, df_short, binder ){
 
 trim_dataframe <- function( df ){
    # Take an output from the edit table and ensure no phantom data is passed
-   df1 <- df[df$Name != '' & df$QTY > 0,]
-   df1[,4] <- as.integer(df1$Foil)
+   df1 <- df[df$CardName != '' & df$QTY > 0,]
+   df1$Foil <- as.integer(df1$Foil)
    return(df1)
 }
 

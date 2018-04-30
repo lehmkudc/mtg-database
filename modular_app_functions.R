@@ -74,9 +74,9 @@ empty_btns <- function(){
       )
 }
 
-tables_ui <- function(){
+tables_ui <- function(id){
    mainPanel(
-      rHandsontableOutput("hot"),
+      rHandsontableOutput(id),
       lapply( binders, function(X) {
          br()
          h3( X$title )
@@ -85,7 +85,7 @@ tables_ui <- function(){
    )
 }
 
-init_values <- function(){
+init_values <- function(input, output, session){
    
    values <- reactiveValues()
    conn <- connect()
@@ -93,9 +93,11 @@ init_values <- function(){
       values[[ X$short ]] <- binder_to_short( conn, X$table )
    })
    values[["active"]] <- ''
+   dbDisconnect( conn) 
+   return( values )
 }
 
-edit_table_server <- function(DF){
+edit_table_server <- function(DF, values, input, output, session){
    observe({
       if (!is.null(input$hot)) {
         DF = hot_to_r(input$hot)
@@ -107,7 +109,33 @@ edit_table_server <- function(DF){
       }
       values[["DF"]] <- DF
     })
+   
+   output$hot <- renderRHandsontable({
+       DF <- values[["DF"]]
+       if (!is.null(DF)){
+          if (input$ac_name & input$ac_set){
+            rhandsontable(DF, useTypes = T)%>% 
+            hot_col(col='Name', type ='autocomplete', 
+                    source = name_source, strict = T)%>%
+            hot_col(col='SetName', type ='autocomplete',
+                    source = set_source, strict = T)
+          } else if (input$ac_name & !input$ac_set) {
+             rhandsontable(DF, useTypes = T)%>% 
+                hot_col(col='Name', type ='autocomplete',
+                        source = name_source, strict = T)
+          } else if (!input$ac_name & input$ac_set) {
+             rhandsontable(DF, useTypes = T)%>% 
+                hot_col(col='SetName', type ='autocomplete',
+                        source = set_source, strict = T)
+          } else {
+             rhandsontable(DF, useTypes = T)
+          }
+       }
+    }) 
 }
+
+
+
 
 the_app <- function(){
    
@@ -116,13 +144,13 @@ the_app <- function(){
    titlePanel("Dustin's Database"),
    sidebarLayout(
       sidebar(),
-      tables_ui()
+      tables_ui("hot")
       )
    )
    
-   server <- function(input,output){
-      init_values()
-      edit_table_server( empty )
+   server <- function(input,output,session){
+      values <- init_values(input, output, session)
+      edit_table_server( empty, values, input, output, session )
    }
    
    
