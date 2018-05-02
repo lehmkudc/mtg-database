@@ -58,7 +58,7 @@ edit_btns <- function(){
       h3("Edit Binders "),
       lapply( binders, function(X){
          actionButton( paste0( 'ed_', X$short),
-                       paste0( 'To ', X$title) )
+                       paste0( 'Edit ', X$title) )
          }),
       br(),
       actionButton( "commit", "Commit Changes" )
@@ -135,22 +135,86 @@ edit_table_server <- function(DF, values, input, output, session){
 }
 
 
+tables_server <- function(values, input, output, session){
+   
+   lapply( binders, function(X){
+      output[[paste0( 'tb_', X$short)]] <- renderRHandsontable({
+         if (!is.null( values[[X$short]] )){
+            S <- values[[X$short]]
+            rhandsontable( S, readOnly = T, useTypes = T, stretchH='all')
+            }
+         
+      })
+   })
+   return(output)
+}
 
+clear_server <- function(values, input, output, session){
+   observeEvent( input$clear, {
+      values[["DF"]] <- empty
+      values[['active']] <- ''
+   })   
+}
+
+load_btns_server <- function( values, input, output, session ){
+   
+   lapply( binders, function(X){
+      observeEvent( input[[paste0( 'to_', X$short)]], {
+         finalDF <- isolate( values[["DF"]])
+         if( nrow(trim_dataframe(finalDF)) > 0){
+            short_to_binder( finalDF, X$table )
+            values[["DF"]] <- empty
+            conn <- connect()
+            values[[X$short]] <- binder_to_short( conn, X$table )
+            dbDisconnect( conn )
+         }
+         
+      })
+      
+   })
+   
+}
 
 the_app <- function(){
+   # Function Wrapper to trick RStudio into running the whole code
    
    ui <- fluidPage(
       
-   titlePanel("Dustin's Database"),
-   sidebarLayout(
-      sidebar(),
-      tables_ui("hot")
+      titlePanel("Dustin's Database"),
+      sidebarLayout(
+         
+         sidebarPanel(
+         helpText("Hello, my name is Dustin and this is my MTG Database.", 
+                    "As you can see, this is a rough work in progress.", 
+                    "Try not to add any storm crows!"),
+         br(),
+         wellPanel(
+            actionButton("clear", "Clear Input Table"),
+            checkboxInput('ac_name',"Autocorrect Name"),
+            checkboxInput('ac_set',"Autocorrect Set")
+         ),
+         load_btns(),
+         edit_btns(),
+         empty_btns()
+         ),
+         
+         mainPanel(
+            rHandsontableOutput("hot"),
+            lapply( binders, function(X) {
+               br()
+               h3( X$title )
+               rHandsontableOutput(paste0( 'tb_', X$short) )
+            })
+         )
+         )
       )
-   )
    
    server <- function(input,output,session){
       values <- init_values(input, output, session)
       edit_table_server( empty, values, input, output, session )
+      output <- tables_server( values, input, output, session )
+      clear_server(values, input, output, session)
+      load_btns_server( values, input, output, session )
    }
    
    

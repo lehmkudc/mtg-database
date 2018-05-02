@@ -101,7 +101,6 @@ binder_to_short <- function( conn, binder ){
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
                'GROUP BY CardName, SetName, Foil, Notes;' )
-   print( q )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )

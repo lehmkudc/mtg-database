@@ -1,0 +1,220 @@
+library(magrittr)
+library(shiny)
+library(RMySQL)
+library(rhandsontable)
+
+empty <- data.frame( QTY=as.integer(0), Name=rep('',20), SetName = rep('',20),
+                                    Foil=rep(FALSE,20), Notes=rep('',20))
+
+
+name_source <- readLines('mtg-database/data_prep/card_names.txt' )
+
+set_source <- read.csv( 'mtg-database/data_prep/set_names.csv' )
+set_source <- set_source$SetName
+
+binders <- list()
+binders[[1]] <- list( title = 'Currently Used',
+                      short = 'play',
+                      table = 'play' )
+binders[[2]] <- list( title = 'Trade Binder',
+                      short = 'trade',
+                      table = 'trade' )
+binders[[3]] <- list( title = 'Wishlist',
+                      short = 'wish',
+                      table = 'wish' )
+
+source( 'mtg-database/transactions.R' )
+source( 'C:/Users/Dustin/Desktop/config.R')
+
+
+dashboard <- function(){
+   # Function wrapper to trick RStudio into running entire code
+   
+   ui <- shinyUI(fluidPage(
+      
+      titlePanel("Magic the Gathering Collection Manager"),
+      
+      sidebarLayout(
+         sidebarPanel(
+            helpText("Hello, my name is Dustin and this is my MTG Database.", 
+                     "As you can see, this is a rough work in progress.", 
+                     "https://github.com/lehmkudc/mtg-database"),
+            
+            br(),
+            wellPanel(
+               # Operation of Edit Table
+               actionButton("clear", "Clear Input Table"),
+               checkboxInput('ac_name',"Autocorrect Name"),
+               checkboxInput('ac_set',"Autocorrect Set")
+            ),
+            # Loading Buttons
+            wellPanel(
+               h3("Load into Binders"), 
+               lapply( binders, function(X){
+                  actionButton( paste0( 'to_', X$short), 
+                                paste0( 'To ', X$title) )
+               })
+            ),
+            # Editing Buttons
+            wellPanel(
+               h3("Edit Binders "),
+               lapply( binders, function(X){
+                  actionButton( paste0( 'ed_', X$short),
+                                paste0( 'Edit ', X$title) )
+               }),
+               br(),
+               actionButton("commit", "Commit Changes")
+            ),
+            # Emptying Buttons
+            wellPanel(
+               h3("Empty Binders (PLZ BE CAREFUL)"),
+               lapply( binders, function(X) {
+                  actionButton( paste0( 'em_', X$short),
+                                paste0( 'Empty ', X$title) )
+               })
+            )
+         ),
+         
+         # Table Outputs on UI
+         mainPanel(
+            rHandsontableOutput("hot"),
+            lapply( binders, function(X) {
+               br()
+               h3( X$title )
+               rHandsontableOutput(paste0( 'tb_', X$short) )
+            })
+         )
+      )
+   ))
+   
+   # ======================================================================= #  
+   
+   server <- shinyServer(function(input, output) {
+      
+      # Reactive Values and initializations
+      DF <- empty
+      values <- reactiveValues()
+      conn <- connect()
+      lapply( binders, function(X) {
+         values[[ X$short ]] <- binder_to_short( conn, X$table )
+      })
+      dbDisconnect( conn )
+      values[["active"]] <- ''
+      
+      # Edit table functionality to recognize user changes
+      observe({
+         if (!is.null(input$hot)) {
+            DF = hot_to_r(input$hot)
+         } else {
+            if (is.null(values[["DF"]]))
+               DF <- DF
+            else
+               DF <- values[["DF"]]
+         }
+         values[["DF"]] <- DF
+      })
+      
+      # Rendering Tables to output =====================================
+      
+      # Edit Table
+      output$hot <- renderRHandsontable({
+         DF <- values[["DF"]]
+         if (!is.null(DF)){
+            if (input$ac_name & input$ac_set){
+               rhandsontable(DF, useTypes = T)%>% 
+                  hot_col(col='Name', type ='autocomplete', 
+                          source = name_source, strict = T)%>%
+                  hot_col(col='SetName', type ='autocomplete',
+                          source = set_source, strict = T)
+            } else if (input$ac_name & !input$ac_set) {
+               rhandsontable(DF, useTypes = T)%>% 
+                  hot_col(col='Name', type ='autocomplete',
+                          source = name_source, strict = T)
+            } else if (!input$ac_name & input$ac_set) {
+               rhandsontable(DF, useTypes = T)%>% 
+                  hot_col(col='SetName', type ='autocomplete',
+                          source = set_source, strict = T)
+            } else {
+               rhandsontable(DF, useTypes = T)
+            }
+         }
+      }) 
+      
+      # Binder Preview Windows
+      lapply( binders, function(X){
+         output[[paste0( 'tb_', X$short)]] <- renderRHandsontable({
+            if (!is.null( values[[X$short]] )){
+               S <- values[[X$short]]
+               rhandsontable( S, readOnly = T, useTypes = T, stretchH='all')
+            }
+         })
+      })
+      
+      
+      ## Various Buttons =================================================
+      
+      # Clear Edit Table
+      observeEvent( input$clear, {
+         values[["DF"]] <- empty
+         values[['active']] <- ''
+      })
+      
+      # Load-in Buttons
+      lapply( binders, function(X){
+         observeEvent( input[[paste0( 'to_', X$short)]], {
+            finalDF <- isolate( values[["DF"]])
+            if( nrow(trim_dataframe(finalDF)) > 0){
+               short_to_binder( finalDF, X$table )
+               values[["DF"]] <- empty
+               conn <- connect()
+               values[[X$short]] <- binder_to_short( conn, X$table )
+               dbDisconnect( conn )
+            }
+         })
+      })
+      
+      # Edit Buttons
+      lapply( binders, function(X){
+         observeEvent( input[[paste0( 'ed_', X$short)]], {
+            conn <- connect()
+            values[["DF"]] <- binder_to_short( conn, X$table )
+            values[["active"]] <- X$table
+            dbDisconnect( conn )
+         })
+      })
+      
+      # Commit Edit
+      observeEvent( input$commit, {
+         if (values[["active"]] != ''){
+            conn <- connect()
+            empty_binder( conn, values[["active"]] )
+            dbDisconnect( conn )
+            finalDF <- isolate(values[["DF"]])
+            short_to_binder( finalDF, values[["active"]])
+            values[["DF"]] <- empty
+            conn <- connect()
+            lapply( binders, function(X) {
+               values[[X$short]] <- binder_to_short( conn, X$table )
+            })
+            values[["active"]] <- ''
+            dbDisconnect( conn )
+         }
+      })
+      
+      # Empty Buttons
+      lapply( binders, function(X){
+         observeEvent( input[[paste0( 'em_', X$short )]], {
+            conn <- connect()
+            empty_binder( conn, X$short )
+            values[[paste0( 'em_', X$short )]] <- binder_to_short( conn, X$table )
+            dbDisconnect(conn )
+         })
+      })
+   })
+   
+   ## APP Call ============================================================== 
+   shinyApp(ui = ui, server = server)
+}
+
+
+dashboard()
