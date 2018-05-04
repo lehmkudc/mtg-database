@@ -3,7 +3,7 @@ library(shiny)
 library(RMySQL)
 library(rhandsontable)
 
-empty <- data.frame( QTY=as.integer(0), Name=rep('',20), SetName = rep('',20),
+empty <- data.frame( QTY=as.integer(0), CardName=rep('',20), SetName = rep('',20),
                                     Foil=rep(FALSE,20), Notes=rep('',20))
 
 
@@ -25,6 +25,9 @@ binders[[3]] <- list( title = 'Wishlist',
 
 source( 'mtg-database/transactions.R' )
 source( 'C:/Users/Dustin/Desktop/config.R')
+
+
+DF <- empty
 
 
 dashboard <- function(){
@@ -77,11 +80,15 @@ dashboard <- function(){
          
          # Table Outputs on UI
          mainPanel(
-            rHandsontableOutput("hot"),
+            wellPanel(
+               h3( 'Editing Table' ),
+               rHandsontableOutput("hot")
+            ),
             lapply( binders, function(X) {
-               br()
-               h3( X$title )
-               rHandsontableOutput(paste0( 'tb_', X$short) )
+               wellPanel(
+                  h3( X$title ),
+                  rHandsontableOutput(paste0( 'tb_', X$short) )
+                  )
             })
          )
       )
@@ -92,7 +99,7 @@ dashboard <- function(){
    server <- shinyServer(function(input, output) {
       
       # Reactive Values and initializations
-      DF <- empty
+
       values <- reactiveValues()
       conn <- connect()
       lapply( binders, function(X) {
@@ -117,25 +124,27 @@ dashboard <- function(){
       # Rendering Tables to output =====================================
       
       # Edit Table
+      
+      colw <- c( )
       output$hot <- renderRHandsontable({
          DF <- values[["DF"]]
          if (!is.null(DF)){
             if (input$ac_name & input$ac_set){
-               rhandsontable(DF, useTypes = T)%>% 
-                  hot_col(col='Name', type ='autocomplete', 
+               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+                  hot_col(col='CardName', type ='autocomplete', 
                           source = name_source, strict = T)%>%
                   hot_col(col='SetName', type ='autocomplete',
                           source = set_source, strict = T)
             } else if (input$ac_name & !input$ac_set) {
-               rhandsontable(DF, useTypes = T)%>% 
-                  hot_col(col='Name', type ='autocomplete',
+               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+                  hot_col(col='CardName', type ='autocomplete',
                           source = name_source, strict = T)
             } else if (!input$ac_name & input$ac_set) {
-               rhandsontable(DF, useTypes = T)%>% 
+               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
                   hot_col(col='SetName', type ='autocomplete',
                           source = set_source, strict = T)
             } else {
-               rhandsontable(DF, useTypes = T)
+               rhandsontable(DF, useTypes = T, stretchH='all')
             }
          }
       }) 
@@ -162,9 +171,14 @@ dashboard <- function(){
       # Load-in Buttons
       lapply( binders, function(X){
          observeEvent( input[[paste0( 'to_', X$short)]], {
+            print( 'observed')
             finalDF <- isolate( values[["DF"]])
+            print( 'isolated' )
+            print( trim_dataframe(finalDF) )
             if( nrow(trim_dataframe(finalDF)) > 0){
+               print( trim_dataframe( finalDF ) )
                short_to_binder( finalDF, X$table )
+               print( 'transaciton complete' )
                values[["DF"]] <- empty
                conn <- connect()
                values[[X$short]] <- binder_to_short( conn, X$table )
