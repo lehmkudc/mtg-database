@@ -22,6 +22,9 @@ short_to_long <- function( df_short ){
    SetName  <- rep( NA, total )
    Foil     <- rep( 0, total )
    Notes    <- rep( NA, total )
+   Mult     <- rep( 1, total )
+   Price    <- rep( 0, total )
+   Fresh    <- rep( 0, total )
    
    j <- 1
    for (i in 1:nrow(df_short)){
@@ -30,16 +33,23 @@ short_to_long <- function( df_short ){
       SetName[r]  <- df_short$SetName[i]
       Foil[r]     <- df_short$Foil[i]
       Notes[r]    <- df_short$Notes[i]
+      Mult[r]     <- df_short$Mult[i]
+      Price[r]     <- df_short$Price[i]
+      Fresh[r]     <- df_short$Fresh[i]
+      
+      
       j <- j + df_short$QTY[i]
    }
    
    df_long <- data.frame( CardName = CardName, SetName = SetName, 
-                          Foil = Foil, Notes = Notes)
+                          Foil = Foil, Notes = Notes, Mult = Mult,
+                          Price = Price, Fresh = Fresh)
    return( df_long )
 }
 
 
-load <- function( conn, card_name, set_name, foil=0, notes=''){
+load <- function( conn, card_name, set_name, foil=0, notes='',
+                  mult = 1, price = 0, fresh='2000-01-01'){
    # Move a user-inputted card into the loading zone
    #     and assign to correct printing
    # WARNING: If correct print is not found, row not insterted
@@ -47,18 +57,18 @@ load <- function( conn, card_name, set_name, foil=0, notes=''){
    card_name   <- paste0('"',card_name,'"')
    set_name    <- paste0('"',set_name,'"')
    notes       <- paste0('"',notes,'"')
+   fresh       <- paste0('"',fresh,'"')
    
-   q <- paste( 'INSERT INTO load_zone (PrintID, Foil, Notes)',
+   q <- paste( 'INSERT INTO load_zone (PrintID, Foil, Notes,',
+               'Mult, Price, Fresh)',
                'SELECT (SELECT PrintID FROM all_prints',
                'WHERE CardID = (SELECT CardID FROM all_cards',
                'WHERE CardName = ', card_name, ')',
                'AND SetID = (SELECT SetID FROM all_sets ',
                'WHERE SetName = ', set_name, ') LIMIT 1 ),',
-               foil, ',', notes, ';')
-   print( q )
+               foil, ',', notes, ',', mult,',',price,',',fresh,  ';')
    
    dbSendQuery( conn, q )
-   print( 'loaded' )
 }
 
 
@@ -68,7 +78,9 @@ load_all <- function( conn, df_long ){
    N <- nrow( df_long )
    for (i in 1:N){
       load( conn, df_long$CardName[i], df_long$SetName[i], 
-            foil = df_long$Foil[i], notes = df_long$Notes[i] )
+            foil = df_long$Foil[i], notes = df_long$Notes[i],
+            mult = df_long$Mult[i], price = df_long$Price[i],
+            fresh = df_long$Fresh[i])
    }
 }
 
@@ -78,8 +90,9 @@ load_to_binder <- function( conn, binder ){
    # Move all tuples from loading zone to a binder
    
    q <- paste( 'INSERT INTO', binder,
-               '(PrintID, Foil, Notes)',
-               'SELECT PrintID, Foil, Notes FROM load_zone;')
+               '(PrintID, Foil, Notes, Mult, Price, Fresh)',
+               'SELECT PrintID, Foil, Notes, Mult, Price, Fresh',
+               'FROM load_zone;')
    dbSendQuery( conn, q )
 }
 
@@ -97,12 +110,12 @@ empty_load_zone <- function( conn ){
 binder_to_short <- function( conn, binder ){
    # Extract condensed card list from a binder
    
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Price, SUM( Price )',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult, Price, SUM( Price )',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY CardName, SetName, Foil, Notes, Price;' )
+               'GROUP BY CardName, SetName, Foil, Notes, Mult, Price;' )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
@@ -112,12 +125,12 @@ binder_to_short <- function( conn, binder ){
 }
 
 binder_to_edit <- function( conn, binder ){
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult, Price, Fresh',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY CardName, SetName, Foil, Notes, Mult;' )
+               'GROUP BY CardName, SetName, Foil, Notes, Mult, Price, Fresh;' )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
@@ -130,14 +143,10 @@ binder_to_edit <- function( conn, binder ){
 short_to_binder <- function( df_short, binder ){
    # Take a decklists and import the data to a chosen binder by
    #    Using the loading zone
-   print( df_short )
    df_long <- short_to_long( df_short )
-   print( df_long )
    conn <- connect()
    load_all( conn, df_long )
-   print( 'loaded' )
    load_to_binder( conn, binder )
-   print( 'bindered' )
    empty_load_zone( conn )
    dbDisconnect( conn )
 }
@@ -212,7 +221,6 @@ update_card_price <- function(binder, pk_name, pk_value, price ){
    q <- paste( "UPDATE", binder,
                "SET Price =", price, ",Fresh = CURDATE()",
                "WHERE", pk_name, "=", pk_value, ";" )
-   print( q )
    conn <- connect()
    dbSendQuery( conn, q )
    dbDisconnect( conn )
@@ -221,10 +229,12 @@ update_card_price <- function(binder, pk_name, pk_value, price ){
 
 update_prices <- function(binder){
    stale <- get_stale( binder )
-   for ( i in 1:nrow(stale) ){
-      price <- get_price( stale$PrintID[i], 0, 1 )
-      update_card_price( binder, colnames( stale )[1], 
-                         stale[i,1], price )
+   if( nrow( stale ) > 0){
+      for ( i in 1:nrow(stale) ){
+         price <- get_price( stale$PrintID[i], 0, 1 )
+         update_card_price( binder, colnames( stale )[1], 
+                            stale[i,1], price )
+      }
    }
 }
 

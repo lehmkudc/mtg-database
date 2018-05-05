@@ -148,14 +148,10 @@ dashboard <- function(){
       # Load-in Buttons
       lapply( binders, function(X){
          observeEvent( input[[paste0( 'to_', X$short)]], {
-            print( 'observed')
             df_read <- isolate( values[["DF"]])
-            print( 'isolated' )
             df_trim <- trim_dataframe( df_read )
-            print( df_trim )
             if( nrow(df_trim) > 0){
                short_to_binder( df_trim, X$table )
-               print( 'transaciton complete' )
                values[["DF"]] <- empty
                update_prices( X$table )
                conn <- connect()
