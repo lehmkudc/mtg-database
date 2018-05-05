@@ -53,7 +53,7 @@ load <- function( conn, card_name, set_name, foil=0, notes=''){
                'WHERE CardID = (SELECT CardID FROM all_cards',
                'WHERE CardName = ', card_name, ')',
                'AND SetID = (SELECT SetID FROM all_sets ',
-               'WHERE SetName = ', set_name, ')) LIMIT 1,',
+               'WHERE SetName = ', set_name, ') LIMIT 1 ),',
                foil, ',', notes, ';')
    print( q )
    
@@ -225,4 +225,19 @@ update_prices <- function(binder){
       update_card_price( binder, colnames( stale )[1], 
                          stale[i,1], price )
    }
+}
+
+select_table <- function( table ){
+   conn <- connect()
+   q <- paste( "SELECT * FROM", table)
+   data <- fetch( dbSendQuery( conn, q ) )
+   dbDisconnect( conn )
+   return( data )
+}
+
+empty_table <- function( table ){
+   conn <- connect()
+   q <- paste( "DELETE FROM", table )
+   dbSendQuery( conn, q )
+   dbDisconnect( conn )
 }
