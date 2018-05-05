@@ -29,7 +29,7 @@ binders[[3]] <- list( title = 'Wishlist',
 
 source( 'mtg-database/transactions.R' )
 source( 'C:/Users/Dustin/Desktop/config.R')
-
+source( 'mtg-database/dashboard_app.R')
 
 kill_connections()
 DF <- empty

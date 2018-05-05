@@ -130,6 +130,7 @@ binder_to_edit <- function( conn, binder ){
 short_to_binder <- function( df_short, binder ){
    # Take a decklists and import the data to a chosen binder by
    #    Using the loading zone
+   print( df_short )
    df_long <- short_to_long( df_short )
    print( df_long )
    conn <- connect()

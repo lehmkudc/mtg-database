@@ -1,5 +1,3 @@
-source( 'mtg-database/init_script.R' )
-
 dashboard <- function(){
    # Function wrapper to trick RStudio into running entire code
    
@@ -151,12 +149,12 @@ dashboard <- function(){
       lapply( binders, function(X){
          observeEvent( input[[paste0( 'to_', X$short)]], {
             print( 'observed')
-            finalDF <- isolate( values[["DF"]])
+            df_read <- isolate( values[["DF"]])
             print( 'isolated' )
-            print( trim_dataframe(finalDF) )
-            if( nrow(trim_dataframe(finalDF)) > 0){
-               print( trim_dataframe( finalDF ) )
-               short_to_binder( finalDF, X$table )
+            df_trim <- trim_dataframe( df_read )
+            print( df_trim )
+            if( nrow(df_trim) > 0){
+               short_to_binder( df_trim, X$table )
                print( 'transaciton complete' )
                values[["DF"]] <- empty
                update_prices( X$table )
@@ -220,6 +218,3 @@ dashboard <- function(){
    ## APP Call ============================================================== 
    shinyApp(ui = ui, server = server)
 }
-
-
-dashboard()
