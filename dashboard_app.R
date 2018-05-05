@@ -3,14 +3,17 @@ library(shiny)
 library(RMySQL)
 library(rhandsontable)
 
-empty <- data.frame( QTY=as.integer(0), CardName=rep('',20), SetName = rep('',20),
-                                    Foil=rep(FALSE,20), Notes=rep('',20))
+empty <- data.frame( QTY=as.integer(0), CardName=rep('',20), 
+                     SetName = rep('',20), Foil=rep(FALSE,20),
+                     Notes = rep('',20), Mult=rep(1,20))
 
 
 name_source <- readLines('mtg-database/data_prep/card_names.txt' )
 
 set_source <- read.csv( 'mtg-database/data_prep/set_names.csv' )
 set_source <- set_source$SetName
+
+kill_connections()
 
 binders <- list()
 binders[[1]] <- list( title = 'Currently Used',
@@ -74,6 +77,15 @@ dashboard <- function(){
                lapply( binders, function(X) {
                   actionButton( paste0( 'em_', X$short),
                                 paste0( 'Empty ', X$title) )
+               })
+            ),
+            
+            #Update Price Buttons
+            wellPanel(
+               h3("Update Prices"),
+               lapply( binders, function(X) {
+                  actionButton( paste0( 'up_', X$short),
+                                paste0( 'Update ', X$title, ' Prices') )
                })
             )
          ),
@@ -180,6 +192,7 @@ dashboard <- function(){
                short_to_binder( finalDF, X$table )
                print( 'transaciton complete' )
                values[["DF"]] <- empty
+               update_prices( X$table )
                conn <- connect()
                values[[X$short]] <- binder_to_short( conn, X$table )
                dbDisconnect( conn )
@@ -191,7 +204,7 @@ dashboard <- function(){
       lapply( binders, function(X){
          observeEvent( input[[paste0( 'ed_', X$short)]], {
             conn <- connect()
-            values[["DF"]] <- binder_to_short( conn, X$table )
+            values[["DF"]] <- binder_to_edit( conn, X$table )
             values[["active"]] <- X$table
             dbDisconnect( conn )
          })
@@ -207,6 +220,7 @@ dashboard <- function(){
             short_to_binder( finalDF, values[["active"]])
             values[["DF"]] <- empty
             conn <- connect()
+            update_prices( values[["active"]] ) 
             lapply( binders, function(X) {
                values[[X$short]] <- binder_to_short( conn, X$table )
             })
@@ -220,8 +234,18 @@ dashboard <- function(){
          observeEvent( input[[paste0( 'em_', X$short )]], {
             conn <- connect()
             empty_binder( conn, X$short )
-            values[[paste0( 'em_', X$short )]] <- binder_to_short( conn, X$table )
+            values[[X$short]] <- binder_to_short( conn, X$table )
             dbDisconnect(conn )
+         })
+      })
+      
+      # Update Price Buttons
+      lapply( binders, function(X){
+         observeEvent( input[[paste0( 'up_', X$short)]], {
+            update_prices( X$table )
+            conn <- connect()
+            values[[X$short]] <- binder_to_short( conn, X$table )
+            dbDisconnect( conn )
          })
       })
    })

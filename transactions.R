@@ -2,6 +2,7 @@ options(stringsAsFactors = FALSE)
 library(RMySQL)
 library(rhandsontable)
 library(shiny)
+library(rjson)
 
 connect <- function(){
    # Connect to sql server using credentials in R environment
@@ -52,11 +53,12 @@ load <- function( conn, card_name, set_name, foil=0, notes=''){
                'WHERE CardID = (SELECT CardID FROM all_cards',
                'WHERE CardName = ', card_name, ')',
                'AND SetID = (SELECT SetID FROM all_sets ',
-               'WHERE SetName = ', set_name, ')),',
+               'WHERE SetName = ', set_name, ')) LIMIT 1,',
                foil, ',', notes, ';')
-   #print( q )
+   print( q )
    
    dbSendQuery( conn, q )
+   print( 'loaded' )
 }
 
 
@@ -95,12 +97,27 @@ empty_load_zone <- function( conn ){
 binder_to_short <- function( conn, binder ){
    # Extract condensed card list from a binder
    
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Price, SUM( Price )',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY CardName, SetName, Foil, Notes;' )
+               'GROUP BY CardName, SetName, Foil, Notes, Price;' )
+   rs <- dbSendQuery( conn, q )
+   df <- fetch( rs )
+   df$QTY <- as.integer( df$QTY )
+   df$Foil <- as.logical( df$Foil )
+   
+   return( df )
+}
+
+binder_to_edit <- function( conn, binder ){
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult',
+               'FROM', binder, 'AS b',
+               'JOIN all_prints AS p ON b.PrintID = p.PrintID',
+               'JOIN all_cards AS c ON p.CardID = c.CardID',
+               'JOIN all_sets AS s ON p.SetID = s.SetID',
+               'GROUP BY CardName, SetName, Foil, Notes, Mult;' )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
@@ -110,15 +127,16 @@ binder_to_short <- function( conn, binder ){
 }
 
 
-
 short_to_binder <- function( df_short, binder ){
    # Take a decklists and import the data to a chosen binder by
    #    Using the loading zone
-   df_short <- trim_dataframe( df_short )
    df_long <- short_to_long( df_short )
+   print( df_long )
    conn <- connect()
    load_all( conn, df_long )
+   print( 'loaded' )
    load_to_binder( conn, binder )
+   print( 'bindered' )
    empty_load_zone( conn )
    dbDisconnect( conn )
 }
@@ -143,4 +161,68 @@ kill_connections <- function(){
    #   multiple connections from being open at the same time while debugging
    conn <- connect()
    dbDisconnect(conn)
+}
+
+
+
+
+
+get_card <- function( set_code, cnumber, promo){
+   star <- ifelse( promo == 1, '%E2%98%85', '')
+   url <- paste0( "https://api.scryfall.com/cards/",
+                  set_code, "/", cnumber, star )
+   card <- fromJSON( file = url )
+   return( card )
+}
+
+get_locator <- function( print_id ){
+   conn <- connect()
+   aq <- paste( "SELECT SetCode, CNumber, Promo FROM all_prints AS p",
+                "JOIN all_sets AS s ON p.SetID = s.SetID",
+                "WHERE PrintID =", print_id )
+   locator <- fetch( dbSendQuery( conn, aq ) )[1,]
+   locator <- list( set_code = locator$SetCode,
+                    cnumber = locator$CNumber,
+                    promo = locator$Promo)
+   dbDisconnect( conn )
+   return( locator )
+}
+
+get_stale <- function( binder ){
+   conn <- connect()
+   q <- paste( "SELECT * FROM", binder, "AS b",
+               "JOIN all_prints AS p ON b.PrintID = p.PrintID",
+               "WHERE b.Fresh < CURDATE();" )
+   s <- dbSendQuery( conn, q )
+   stale <- fetch( s )
+   dbDisconnect( conn )
+   return( stale )
+}
+
+get_price <- function( print_id, foil, mult ){
+   locator <- get_locator( print_id )
+   card <- get_card( locator$set_code, locator$cnumber, locator$promo )
+   p <- card$usd
+   price <- as.numeric(p)*mult
+   return( price )
+}
+
+update_card_price <- function(binder, pk_name, pk_value, price ){
+   q <- paste( "UPDATE", binder,
+               "SET Price =", price, ",Fresh = CURDATE()",
+               "WHERE", pk_name, "=", pk_value, ";" )
+   print( q )
+   conn <- connect()
+   dbSendQuery( conn, q )
+   dbDisconnect( conn )
+}
+
+
+update_prices <- function(binder){
+   stale <- get_stale( binder )
+   for ( i in 1:nrow(stale) ){
+      price <- get_price( stale$PrintID[i], 0, 1 )
+      update_card_price( binder, colnames( stale )[1], 
+                         stale[i,1], price )
+   }
 }

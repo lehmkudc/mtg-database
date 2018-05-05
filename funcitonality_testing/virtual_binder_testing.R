@@ -25,26 +25,26 @@ binders[[3]] <- list( title = 'Wishlist',
                       table = 'wish',
                       pk = 'WishID')
 
-
-
-get_binder_cards <- function( binder ){
-   conn <- connect()
-   binder <- paste0( '"', binder, '"' )
-   bq <- paste( "SELECT * FROM", binder)
-   bs <- dbSendQuery( conn, bq )
-   binder_cards <- fetch( bs )
-   dbDisconnect( conn )
-   return( binder_cards )
-}
-
-get_price_info <- function(){
-   conn <- connect()
-   pq <- "SELECT * FROM card_prices;"
-   ps <- dbSendQuery( conn, pq )
-   price_info <- fetch( ps )
-   dbDisconnect( conn )
-   return( price_info )
-}
+# 
+# 
+# get_binder_cards <- function( binder ){
+#    conn <- connect()
+#    binder <- paste0( '"', binder, '"' )
+#    bq <- paste( "SELECT * FROM", binder)
+#    bs <- dbSendQuery( conn, bq )
+#    binder_cards <- fetch( bs )
+#    dbDisconnect( conn )
+#    return( binder_cards )
+# }
+# 
+# get_price_info <- function(){
+#    conn <- connect()
+#    pq <- "SELECT * FROM card_prices;"
+#    ps <- dbSendQuery( conn, pq )
+#    price_info <- fetch( ps )
+#    dbDisconnect( conn )
+#    return( price_info )
+# }
 
 
 get_card <- function( set_code, cnumber, promo){
