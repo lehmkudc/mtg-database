@@ -107,21 +107,33 @@ dashboard <- function(){
          DF <- values[["DF"]]
          if (!is.null(DF)){
             if (input$ac_name & input$ac_set){
-               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+               rhandsontable(DF, useTypes = T, stretchH='all')%>%
+                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
                   hot_col(col='CardName', type ='autocomplete', 
                           source = name_source, strict = T)%>%
                   hot_col(col='SetName', type ='autocomplete',
-                          source = set_source, strict = T)
+                          source = set_source, strict = T)%>%
+                  hot_col(col='Price', readOnly = T) %>%
+                  hot_col(col='Fresh', readOnly = T)
             } else if (input$ac_name & !input$ac_set) {
                rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
                   hot_col(col='CardName', type ='autocomplete',
-                          source = name_source, strict = T)
+                          source = name_source, strict = T)%>%
+                  hot_col(col='Price', readOnly = T) %>%
+                  hot_col(col='Fresh', readOnly = T)
             } else if (!input$ac_name & input$ac_set) {
                rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
                   hot_col(col='SetName', type ='autocomplete',
-                          source = set_source, strict = T)
+                          source = set_source, strict = T)%>%
+                  hot_col(col='Price', readOnly = T) %>%
+                  hot_col(col='Fresh', readOnly = T)
             } else {
-               rhandsontable(DF, useTypes = T, stretchH='all')
+               rhandsontable(DF, useTypes = T, stretchH='all')%>%
+                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+                  hot_col(col='Price', readOnly = T) %>%
+                  hot_col(col='Fresh', readOnly = T)
             }
          }
       }) 
