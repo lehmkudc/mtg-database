@@ -16,7 +16,7 @@ dashboard <- function(){
                # Operation of Edit Table
                actionButton("clear", "Clear Input Table"),
                checkboxInput('ac_name',"Autocorrect Name"),
-               checkboxInput('ac_set',"Autocorrect Set")
+               checkboxInput('ac_set',"Autocorrect Set", value=T)
             ),
             # Loading Buttons
             wellPanel(
@@ -105,37 +105,68 @@ dashboard <- function(){
       colw <- c( )
       output$hot <- renderRHandsontable({
          DF <- values[["DF"]]
-         if (!is.null(DF)){
+         if( !is.null(DF)){
+            base <- rhandsontable(DF, useTypes = T, stretchH='all')
+            #base
+            hot_context_menu( base, allowRowEdit = FALSE, allowColEdit = FALSE)
+            hot_col( base, col='Price', readOnly = T)
+            hot_col( base, col='Fresh', readOnly = T)
             if (input$ac_name & input$ac_set){
-               rhandsontable(DF, useTypes = T, stretchH='all')%>%
-                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-                  hot_col(col='CardName', type ='autocomplete', 
-                          source = name_source, strict = T)%>%
-                  hot_col(col='SetName', type ='autocomplete',
-                          source = set_source, strict = T)%>%
-                  hot_col(col='Price', readOnly = T) %>%
-                  hot_col(col='Fresh', readOnly = T)
+               hot_col(base, col='CardName', type ='autocomplete',
+                       source = name_source, strict = T)
+               hot_col(base, col='SetName', type ='autocomplete',
+                       source = set_source, strict = T)
             } else if (input$ac_name & !input$ac_set) {
-               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
-                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-                  hot_col(col='CardName', type ='autocomplete',
-                          source = name_source, strict = T)%>%
-                  hot_col(col='Price', readOnly = T) %>%
-                  hot_col(col='Fresh', readOnly = T)
+               hot_col(base, col='CardName', type ='autocomplete',
+                       source = name_source, strict = T)
             } else if (!input$ac_name & input$ac_set) {
-               rhandsontable(DF, useTypes = T, stretchH='all')%>% 
-                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-                  hot_col(col='SetName', type ='autocomplete',
-                          source = set_source, strict = T)%>%
-                  hot_col(col='Price', readOnly = T) %>%
-                  hot_col(col='Fresh', readOnly = T)
+               hot_col(base, col='SetName', type ='autocomplete',
+                       source = set_source, strict = T)
             } else {
-               rhandsontable(DF, useTypes = T, stretchH='all')%>%
-                  hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-                  hot_col(col='Price', readOnly = T) %>%
-                  hot_col(col='Fresh', readOnly = T)
+            base
             }
          }
+         #    hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+         #    hot_col(col='Price', readOnly = T) %>%
+         #    hot_col(col='Fresh', readOnly = T) %>%
+         #    if (input$ac_name & input$ac_set){
+         #       hot_col(col='CardName', type ='autocomplete',
+         #               source = name_source, strict = T)%>%
+         #          hot_col(col='SetName', type ='autocomplete',
+         #                  source = set_source, strict = T)
+         #    }
+               
+         # if (!is.null(DF)){
+         #    if (input$ac_name & input$ac_set){
+         #       rhandsontable(DF, useTypes = T, stretchH='all')%>%
+         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+         #          hot_col(col='CardName', type ='autocomplete', 
+         #                  source = name_source, strict = T)%>%
+         #          hot_col(col='SetName', type ='autocomplete',
+         #                  source = set_source, strict = T)%>%
+         #          hot_col(col='Price', readOnly = T) %>%
+         #          hot_col(col='Fresh', readOnly = T)
+         #    } else if (input$ac_name & !input$ac_set) {
+         #       rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+         #          hot_col(col='CardName', type ='autocomplete',
+         #                  source = name_source, strict = T)%>%
+         #          hot_col(col='Price', readOnly = T) %>%
+         #          hot_col(col='Fresh', readOnly = T)
+         #    } else if (!input$ac_name & input$ac_set) {
+         #       rhandsontable(DF, useTypes = T, stretchH='all')%>% 
+         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+         #          hot_col(col='SetName', type ='autocomplete',
+         #                  source = set_source, strict = T)%>%
+         #          hot_col(col='Price', readOnly = T) %>%
+         #          hot_col(col='Fresh', readOnly = T)
+         #    } else {
+         #       rhandsontable(DF, useTypes = T, stretchH='all')%>%
+         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+         #          hot_col(col='Price', readOnly = T) %>%
+         #          hot_col(col='Fresh', readOnly = T)
+         #    }
+         # }
       }) 
       
       # Binder Preview Windows
