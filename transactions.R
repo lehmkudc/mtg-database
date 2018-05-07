@@ -110,7 +110,8 @@ empty_load_zone <- function( conn ){
 binder_to_short <- function( conn, binder ){
    # Extract condensed card list from a binder
    
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult, Price, SUM( Price )',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes,',
+               'Mult*Price AS Per_Card, SUM( mult*Price ) AS Total',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
@@ -213,7 +214,7 @@ get_price <- function( print_id, foil, mult ){
    locator <- get_locator( print_id )
    card <- get_card( locator$set_code, locator$cnumber, locator$promo )
    p <- card$usd
-   price <- as.numeric(p)*mult
+   price <- as.numeric(p)
    return( price )
 }
 

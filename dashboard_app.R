@@ -126,48 +126,7 @@ dashboard <- function(){
             base
             }
          }
-         #    hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-         #    hot_col(col='Price', readOnly = T) %>%
-         #    hot_col(col='Fresh', readOnly = T) %>%
-         #    if (input$ac_name & input$ac_set){
-         #       hot_col(col='CardName', type ='autocomplete',
-         #               source = name_source, strict = T)%>%
-         #          hot_col(col='SetName', type ='autocomplete',
-         #                  source = set_source, strict = T)
-         #    }
-               
-         # if (!is.null(DF)){
-         #    if (input$ac_name & input$ac_set){
-         #       rhandsontable(DF, useTypes = T, stretchH='all')%>%
-         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-         #          hot_col(col='CardName', type ='autocomplete', 
-         #                  source = name_source, strict = T)%>%
-         #          hot_col(col='SetName', type ='autocomplete',
-         #                  source = set_source, strict = T)%>%
-         #          hot_col(col='Price', readOnly = T) %>%
-         #          hot_col(col='Fresh', readOnly = T)
-         #    } else if (input$ac_name & !input$ac_set) {
-         #       rhandsontable(DF, useTypes = T, stretchH='all')%>% 
-         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-         #          hot_col(col='CardName', type ='autocomplete',
-         #                  source = name_source, strict = T)%>%
-         #          hot_col(col='Price', readOnly = T) %>%
-         #          hot_col(col='Fresh', readOnly = T)
-         #    } else if (!input$ac_name & input$ac_set) {
-         #       rhandsontable(DF, useTypes = T, stretchH='all')%>% 
-         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-         #          hot_col(col='SetName', type ='autocomplete',
-         #                  source = set_source, strict = T)%>%
-         #          hot_col(col='Price', readOnly = T) %>%
-         #          hot_col(col='Fresh', readOnly = T)
-         #    } else {
-         #       rhandsontable(DF, useTypes = T, stretchH='all')%>%
-         #          hot_context_menu(allowRowEdit = FALSE, allowColEdit = FALSE) %>%
-         #          hot_col(col='Price', readOnly = T) %>%
-         #          hot_col(col='Fresh', readOnly = T)
-         #    }
-         # }
-      }) 
+      })
       
       # Binder Preview Windows
       lapply( binders, function(X){
