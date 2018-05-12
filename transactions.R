@@ -20,7 +20,7 @@ short_to_long <- function( df_short ){
    total    <- sum( df_short$QTY )
    CardName <- rep( 0, total )
    SetName  <- rep( NA, total )
-   Foil     <- rep( 0, total )
+   CNumber  <- rep( "", total )
    Notes    <- rep( NA, total )
    Mult     <- rep( 1, total )
    Price    <- rep( 0, total )
@@ -31,7 +31,7 @@ short_to_long <- function( df_short ){
       r <- j:(j + df_short$QTY[i] - 1 )
       CardName[r] <- df_short$CardName[i]
       SetName[r]  <- df_short$SetName[i]
-      Foil[r]     <- df_short$Foil[i]
+      CNumber[r]  <- df_short$CNumber[i]
       Notes[r]    <- df_short$Notes[i]
       Mult[r]     <- df_short$Mult[i]
       Price[r]     <- df_short$Price[i]
@@ -42,7 +42,7 @@ short_to_long <- function( df_short ){
    }
    
    df_long <- data.frame( CardName = CardName, SetName = SetName, 
-                          Foil = Foil, Notes = Notes, Mult = Mult,
+                          CNumber = CNumber, Notes = Notes, Mult = Mult,
                           Price = Price, Fresh = Fresh)
    return( df_long )
 }
@@ -85,7 +85,7 @@ load_all <- function( conn, df_long ){
    N <- nrow( df_long )
    for (i in 1:N){
       load( conn, df_long$CardName[i], df_long$SetName[i], 
-            foil = df_long$Foil[i], notes = df_long$Notes[i],
+            cnum = df_long$CNumber[i], notes = df_long$Notes[i],
             mult = df_long$Mult[i], price = df_long$Price[i],
             fresh = df_long$Fresh[i])
    }
@@ -97,8 +97,8 @@ load_to_binder <- function( conn, binder ){
    # Move all tuples from loading zone to a binder
    
    q <- paste( 'INSERT INTO', binder,
-               '(PrintID, Foil, Notes, Mult, Price, Fresh)',
-               'SELECT PrintID, Foil, Notes, Mult, Price, Fresh',
+               '(PrintID, Notes, Mult, Price, Fresh)',
+               'SELECT PrintID, Notes, Mult, Price, Fresh',
                'FROM load_zone;')
    dbSendQuery( conn, q )
 }
@@ -117,32 +117,30 @@ empty_load_zone <- function( conn ){
 binder_to_short <- function( conn, binder ){
    # Extract condensed card list from a binder
    
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes,',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, CNumber, Notes,',
                'Mult*Price AS Per_Card, SUM( mult*Price ) AS Total',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY CardName, SetName, Foil, Notes, Mult, Price;' )
+               'GROUP BY CardName, SetName, CNumber, Notes, Mult, Price;' )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
-   df$Foil <- as.logical( df$Foil )
    
    return( df )
 }
 
 binder_to_edit <- function( conn, binder ){
-   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, Foil, Notes, Mult, Price, Fresh',
+   q <- paste( 'SELECT COUNT(*) AS QTY, CardName, SetName, CNumber, Notes, Mult, Price, Fresh',
                'FROM', binder, 'AS b',
                'JOIN all_prints AS p ON b.PrintID = p.PrintID',
                'JOIN all_cards AS c ON p.CardID = c.CardID',
                'JOIN all_sets AS s ON p.SetID = s.SetID',
-               'GROUP BY CardName, SetName, Foil, Notes, Mult, Price, Fresh;' )
+               'GROUP BY CardName, SetName, CNumber, Notes, Mult, Price, Fresh;' )
    rs <- dbSendQuery( conn, q )
    df <- fetch( rs )
    df$QTY <- as.integer( df$QTY )
-   df$Foil <- as.logical( df$Foil )
    
    return( df )
 }
@@ -164,7 +162,6 @@ short_to_binder <- function( df_short, binder ){
 trim_dataframe <- function( df ){
    # Take an output from the edit table and ensure no phantom data is passed
    df1 <- df[df$CardName != '' & df$QTY > 0,]
-   df1$Foil <- as.integer(df1$Foil)
    return(df1)
 }
 
@@ -213,7 +210,7 @@ get_stale <- function( binder ){
    return( stale )
 }
 
-get_price <- function( print_id, foil, mult ){
+get_price <- function( print_id, mult ){
    locator <- get_locator( print_id )
    card <- get_card( locator$set_code, locator$cnumber, locator$promo )
    p <- card$usd

@@ -2,16 +2,24 @@ source( 'mtg-database/init_script.R' )
 
 
 
+# conn <- connect()
+# 
+# binder_to_short( conn, 'held_binder' )
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# dbDisconnect(conn)
 
 
 
+#create_binder( 'Held Playsets', 'held', 'held_binder')
 
-
-#delete_binder( 'test' )
-
-#create_binder( 'Standard: Hazored', 'hazored','hazored' )
-
-#create_binder( 'TESTING', 'test', 'test' )
-# dashboard()
-#select_table( 'play' )
-# update_prices( 'play' )
+dashboard()

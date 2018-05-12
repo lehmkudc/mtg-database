@@ -105,7 +105,7 @@ dashboard <- function(){
       colw <- c( )
       output$hot <- renderRHandsontable({
          DF <- values[["DF"]]
-         if( !is.null(DF)){
+         if( !is.null(DF) ){
             base <- rhandsontable(DF, useTypes = T, stretchH='all')
             #base
             hot_context_menu( base, allowRowEdit = FALSE, allowColEdit = FALSE)
