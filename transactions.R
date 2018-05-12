@@ -48,7 +48,7 @@ short_to_long <- function( df_short ){
 }
 
 
-load <- function( conn, card_name, set_name, foil=0, notes='',
+load <- function( conn, card_name, set_name, cnum='', notes='',
                   mult = 1, price = 0, fresh='2000-01-01'){
    # Move a user-inputted card into the loading zone
    #     and assign to correct printing
@@ -59,15 +59,22 @@ load <- function( conn, card_name, set_name, foil=0, notes='',
    notes       <- paste0('"',notes,'"')
    fresh       <- paste0('"',fresh,'"')
    
-   q <- paste( 'INSERT INTO load_zone (PrintID, Foil, Notes,',
-               'Mult, Price, Fresh)',
-               'SELECT (SELECT PrintID FROM all_prints',
-               'WHERE CardID = (SELECT CardID FROM all_cards',
-               'WHERE CardName = ', card_name, ')',
-               'AND SetID = (SELECT SetID FROM all_sets ',
-               'WHERE SetName = ', set_name, ') LIMIT 1 ),',
-               foil, ',', notes, ',', mult,',',price,',',fresh,  ';')
+   qb <- paste( 'INSERT INTO load_zone (PrintID, Notes, Mult, Price, Fresh)',
+                'SELECT (SELECT PrintID FROM all_prints',
+                'WHERE CardID = (SELECT CardID FROM all_cards',
+                'WHERE CardName = ', card_name, ')',
+                'AND SetID = (SELECT SetID FROM all_sets ',
+                'WHERE SetName = ', set_name, ')' )
+   ql <- paste( notes, ',', mult, ',', price, ',', fresh, ';')
+                
+   if ( cnum == '' ){
+      qm <- 'LIMIT 1 ),'
+   } else {
+      qm <- paste0( 'AND CNumber = "', cnum, '" ),' )
+   }
    
+   q <- paste( qb, qm, ql )
+   print( q )
    dbSendQuery( conn, q )
 }
 
@@ -262,13 +269,11 @@ create_binder <- function(title_name, short_name, table_name){
    q <- paste0("CREATE TABLE `magic`.`", table_name, "` ( `",
                tools::toTitleCase(short_name), "ID` INT NOT NULL AUTO_INCREMENT, ",
                "`PrintID` INT NULL, ",
-               "`Foil` TINYINT(1) NULL DEFAULT 0, ",
                "`Notes` VARCHAR(45) NULL, ",
                "`Mult` DECIMAL(3,2) NULL DEFAULT 1, ",
                "`Price` DECIMAL(9,2) NULL DEFAULT 0, ",
                "`Fresh` DATE NULL DEFAULT '2000-01-01', ",
                "PRIMARY KEY (", pk_id, "));" )
-   print( q )
    conn <- connect()
    dbSendQuery( conn, q )
    dbDisconnect( conn )

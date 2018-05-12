@@ -12,6 +12,6 @@ source( 'mtg-database/init_script.R' )
 #create_binder( 'Standard: Hazored', 'hazored','hazored' )
 
 #create_binder( 'TESTING', 'test', 'test' )
-dashboard()
+# dashboard()
 #select_table( 'play' )
 # update_prices( 'play' )
