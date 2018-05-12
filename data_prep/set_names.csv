@@ -1,11 +1,13 @@
 SetCode,SetName
-dom,Dominaria
-ust,Unstable
+m19,Core Set 2019
 ss1,Signature Spellbook: Jace
+bbd,Battlebond
+cm2,Commander Anthology Volume II
+dom,Dominaria
 tdom,Dominaria Tokens
 pdom,Dominaria Promos
-tddu,Duel Decks: Elves vs. Inventors Tokens
 ddu,Duel Decks: Elves vs. Inventors
+tddu,Duel Decks: Elves vs. Inventors Tokens
 a25,Masters 25
 ta25,Masters 25 Tokens
 plny,2018 Lunar New Year
@@ -15,10 +17,11 @@ trix,Rivals of Ixalan Tokens
 rix,Rivals of Ixalan
 j18,Judge Gift Cards 2018
 f18,Friday Night Magic 2018
+ust,Unstable
 tima,Iconic Masters Tokens
+v17,From the Vault: Transform
 e02,Explorers of Ixalan
 pxtc,XLN Treasure Chest
-v17,From the Vault: Transform
 ima,Iconic Masters
 tust,Unstable Tokens
 pust,Unstable Promos
@@ -26,22 +29,22 @@ ddt,Duel Decks: Merfolk vs. Goblins
 tddt,Duel Decks: Merfolk vs. Goblins Tokens
 pgp17,2017 Gift Pack
 xln,Ixalan
-txln,Ixalan Tokens
 pxln,Ixalan Promos
+txln,Ixalan Tokens
 pss2,XLN Standard Showdown
 h17,HasCon 2017
 htr,2016 Heroes of the Realm
 te01,Archenemy: Nicol Bolas Tokens
 oc17,Commander 2017 Oversized
-tc17,Commander 2017 Tokens
 c17,Commander 2017
+tc17,Commander 2017 Tokens
 ps17,San Diego Comic-Con 2017
 hou,Hour of Devastation
 thou,Hour of Devastation Tokens
 phou,Hour of Devastation Promos
 e01,Archenemy: Nicol Bolas
-cma,Commander Anthology
 tcma,Commander Anthology Tokens
+cma,Commander Anthology
 akh,Amonkhet
 pakh,Amonkhet Promos
 takh,Amonkhet Tokens
@@ -49,20 +52,20 @@ mp2,Amonkhet Invocations
 w17,Welcome Deck 2017
 dds,Duel Decks: Mind vs. Might
 tdds,Duel Decks: Mind vs. Might Tokens
-mm3,Modern Masters 2017
 tmm3,Modern Masters 2017 Tokens
+mm3,Modern Masters 2017
 taer,Aether Revolt Tokens
 aer,Aether Revolt
 paer,Aether Revolt Promos
 l17,League Tokens 2017
 j17,Judge Gift Cards 2017
 f17,Friday Night Magic 2017
-pca,Planechase Anthology
 tpca,Planechase Anthology Tokens
+pca,Planechase Anthology
 pz2,You Make the Cube
 oc16,Commander 2016 Oversized
-c16,Commander 2016
 tc16,Commander 2016 Tokens
+c16,Commander 2016
 ps16,San Diego Comic-Con 2016
 kld,Kaladesh
 tkld,Kaladesh Tokens
@@ -75,45 +78,45 @@ v16,From the Vault: Lore
 emn,Eldritch Moon
 temn,Eldritch Moon Tokens
 pemn,Eldritch Moon Promos
-ema,Eternal Masters
 tema,Eternal Masters Tokens
-tsoi,Shadows over Innistrad Tokens
+ema,Eternal Masters
 soi,Shadows over Innistrad
+tsoi,Shadows over Innistrad Tokens
 psoi,Shadows over Innistrad Promos
 w16,Welcome Deck 2016
 ddq,Duel Decks: Blessed vs. Cursed
-togw,Oath of the Gatewatch Tokens
 ogw,Oath of the Gatewatch
+togw,Oath of the Gatewatch Tokens
 pogw,Oath of the Gatewatch Promos
 l16,League Tokens 2016
-f16,Friday Night Magic 2016
 j16,Judge Gift Cards 2016
+f16,Friday Night Magic 2016
 pz1,Legendary Cube
-tc15,Commander 2015 Tokens
 c15,Commander 2015
+tc15,Commander 2015 Tokens
 oc15,Commander 2015 Oversized
 tbfz,Battle for Zendikar Tokens
 bfz,Battle for Zendikar
 pss1,BFZ Standard Series
-pbfz,Battle for Zendikar Promos
 exp,Zendikar Expeditions
+pbfz,Battle for Zendikar Promos
 ddp,Duel Decks: Zendikar vs. Eldrazi
 v15,From the Vault: Angels
 cp3,Magic Origins Clash Pack
 pori,Magic Origins Promos
-ori,Magic Origins
 tori,Magic Origins Tokens
+ori,Magic Origins
 ps15,San Diego Comic-Con 2015
-tmm2,Modern Masters 2015 Tokens
 mm2,Modern Masters 2015
+tmm2,Modern Masters 2015 Tokens
 tpr,Tempest Remastered
 ptkdf,Tarkir Dragonfury
-tdtk,Dragons of Tarkir Tokens
 dtk,Dragons of Tarkir
+tdtk,Dragons of Tarkir Tokens
 pdtk,Dragons of Tarkir Promos
 ddo,Duel Decks: Elspeth vs. Kiora
-tfrf,Fate Reforged Tokens
 frf,Fate Reforged
+tfrf,Fate Reforged Tokens
 pfrf,Fate Reforged Promos
 ugin,Ugin's Fate
 l15,League Tokens 2015
@@ -122,39 +125,39 @@ f15,Friday Night Magic 2015
 tjvc,Duel Decks Anthology: Jace vs. Chandra Tokens
 tdvd,Duel Decks Anthology: Divine vs. Demonic Tokens
 tgvl,Duel Decks Anthology: Garruk vs. Liliana Tokens
-evg,Duel Decks Anthology: Elves vs. Goblins
-tevg,Duel Decks Anthology: Elves vs. Goblins Tokens
+dvd,Duel Decks Anthology: Divine vs. Demonic
 jvc,Duel Decks Anthology: Jace vs. Chandra
 gvl,Duel Decks Anthology: Garruk vs. Liliana
-dvd,Duel Decks Anthology: Divine vs. Demonic
+evg,Duel Decks Anthology: Elves vs. Goblins
+tevg,Duel Decks Anthology: Elves vs. Goblins Tokens
 oc14,Commander 2014 Oversized
-c14,Commander 2014
 tc14,Commander 2014 Tokens
+c14,Commander 2014
 ktk,Khans of Tarkir
 tktk,Khans of Tarkir Tokens
 pktk,Khans of Tarkir Promos
 tddn,Duel Decks: Speed vs. Cunning Tokens
 ddn,Duel Decks: Speed vs. Cunning
 v14,From the Vault: Annihilation
-tm15,Magic 2015 Tokens
-cp2,Fate Reforged Clash Pack
 cp1,Magic 2015 Clash Pack
 m15,Magic 2015
+cp2,Fate Reforged Clash Pack
+tm15,Magic 2015 Tokens
 pm15,Magic 2015 Promos
 ppc1,M15 Prerelease Challenge
 ps14,San Diego Comic-Con 2014
 vma,Vintage Masters
 cns,Conspiracy
 tcns,Conspiracy Tokens
-md1,Modern Event Deck 2014
 tmd1,Modern Event Deck 2014 Tokens
+md1,Modern Event Deck 2014
 tdag,Defeat a God
 jou,Journey into Nyx
 thp3,Journey into Nyx Hero's Path
 tjou,Journey into Nyx Tokens
 pjou,Journey into Nyx Promos
-ddm,Duel Decks: Jace vs. Vraska
 tddm,Duel Decks: Jace vs. Vraska Tokens
+ddm,Duel Decks: Jace vs. Vraska
 tbth,Battle the Horde
 bng,Born of the Gods
 thp2,Born of the Gods Hero's Path
@@ -168,25 +171,25 @@ f14,Friday Night Magic 2014
 oc13,Commander 2013 Oversized
 c13,Commander 2013
 tfth,Face the Hydra
+ths,Theros
 thp1,Theros Hero's Path
 tths,Theros Tokens
-ths,Theros
 pths,Theros Promos
-tddl,Duel Decks: Heroes vs. Monsters Tokens
 ddl,Duel Decks: Heroes vs. Monsters
+tddl,Duel Decks: Heroes vs. Monsters Tokens
 v13,From the Vault: Twenty
-m14,Magic 2014
 tm14,Magic 2014 Tokens
+m14,Magic 2014
 pm14,Magic 2014 Promos
 psdc,San Diego Comic-Con 2013
-mma,Modern Masters
 tmma,Modern Masters Tokens
+mma,Modern Masters
 dgm,Dragon's Maze
 tdgm,Dragon's Maze Tokens
 pdgm,Dragon's Maze Promos
 pwcq,World Magic Cup Qualifiers
-tddk,Duel Decks: Sorin vs. Tibalt Tokens
 ddk,Duel Decks: Sorin vs. Tibalt
+tddk,Duel Decks: Sorin vs. Tibalt Tokens
 gtc,Gatecrash
 tgtc,Gatecrash Tokens
 pgtc,Gatecrash Promos
@@ -200,8 +203,8 @@ cm1,Commander's Arsenal
 rtr,Return to Ravnica
 prtr,Return to Ravnica Promos
 trtr,Return to Ravnica Tokens
-tddj,Duel Decks: Izzet vs. Golgari Tokens
 ddj,Duel Decks: Izzet vs. Golgari
+tddj,Duel Decks: Izzet vs. Golgari Tokens
 v12,From the Vault: Realms
 m13,Magic 2013
 tm13,Magic 2013 Tokens
@@ -219,7 +222,6 @@ pdka,Dark Ascension Promos
 pidw,IDW Comics 2012
 pwp12,Wizards Play Network 2012
 pdp12,Duels of the Planeswalkers Promos 2012
-ltk,League Tokens
 l12,League Tokens 2012
 f12,Friday Night Magic 2012
 j12,Judge Gift Cards 2012
@@ -227,21 +229,21 @@ pd3,Premium Deck Series: Graveborn
 isd,Innistrad
 tisd,Innistrad Tokens
 pisd,Innistrad Promos
-tddh,Duel Decks: Ajani vs. Nicol Bolas Tokens
 ddh,Duel Decks: Ajani vs. Nicol Bolas
+tddh,Duel Decks: Ajani vs. Nicol Bolas Tokens
 v11,From the Vault: Legends
 m12,Magic 2012
 tm12,Magic 2012 Tokens
 pm12,Magic 2012 Promos
 ocmd,Commander 2011 Oversized
-pcmd,Commander 2011 Launch Party
 cmd,Commander 2011
+pcmd,Commander 2011 Launch Party
 td2,Duel Decks: Mirrodin Pure vs. New Phyrexia
-nph,New Phyrexia
 tnph,New Phyrexia Tokens
+nph,New Phyrexia
 pnph,New Phyrexia Promos
-ddg,Duel Decks: Knights vs. Dragons
 tddg,Duel Decks: Knights vs. Dragons Tokens
+ddg,Duel Decks: Knights vs. Dragons
 mbs,Mirrodin Besieged
 tmbs,Mirrodin Besieged Tokens
 pmbs,Mirrodin Besieged Promos
@@ -249,37 +251,37 @@ me4,Masters Edition IV
 pmps11,Magic Premiere Shop 2011
 pdp11,Duels of the Planeswalkers Promos 2011
 pwp11,Wizards Play Network 2011
-g11,Judge Gift Cards 2011
-f11,Friday Night Magic 2011
 olgc,Legacy Championship
+g11,Judge Gift Cards 2011
 p11,Magic Player Rewards 2011
+f11,Friday Night Magic 2011
 pd2,Premium Deck Series: Fire and Lightning
 td0,Magic Online Theme Decks
 tsom,Scars of Mirrodin Tokens
 som,Scars of Mirrodin
 psom,Scars of Mirrodin Promos
-tddf,Duel Decks: Elspeth vs. Tezzeret Tokens
 ddf,Duel Decks: Elspeth vs. Tezzeret
+tddf,Duel Decks: Elspeth vs. Tezzeret Tokens
 v10,From the Vault: Relics
-tm11,Magic 2011 Tokens
 m11,Magic 2011
+tm11,Magic 2011 Tokens
 pm11,Magic 2011 Promos
 arc,Archenemy
 parc,Promotional Schemes
 dpa,Duels of the Planeswalkers
 proe,Rise of the Eldrazi Promos
-roe,Rise of the Eldrazi
 troe,Rise of the Eldrazi Tokens
-tdde,Duel Decks: Phyrexia vs. the Coalition Tokens
+roe,Rise of the Eldrazi
 dde,Duel Decks: Phyrexia vs. the Coalition
+tdde,Duel Decks: Phyrexia vs. the Coalition Tokens
 pwwk,Worldwake Promos
-twwk,Worldwake Tokens
 wwk,Worldwake
+twwk,Worldwake Tokens
 pdp10,Duels of the Planeswalkers Promos 2010
 pwp10,Wizards Play Network 2010
 pmps10,Magic Premiere Shop 2010
-p10,Magic Player Rewards 2010
 g10,Judge Gift Cards 2010
+p10,Magic Player Rewards 2010
 f10,Friday Night Magic 2010
 h09,Premium Deck Series: Slivers
 ddd,Duel Decks: Garruk vs. Liliana
@@ -294,13 +296,13 @@ v09,From the Vault: Exiled
 tm10,Magic 2010 Tokens
 m10,Magic 2010
 pm10,Magic 2010 Promos
-tarb,Alara Reborn Tokens
 arb,Alara Reborn
-ddc,Duel Decks: Divine vs. Demonic
+tarb,Alara Reborn Tokens
 tddc,Duel Decks: Divine vs. Demonic Tokens
+ddc,Duel Decks: Divine vs. Demonic
 purl,URL/Convention Promos
-tcon,Conflux Tokens
 con,Conflux
+tcon,Conflux Tokens
 pbok,Miscellaneous Book Promos
 pwp09,Wizards Play Network 2009
 pdtp,Duels of the Planeswalkers Promos 2009
@@ -308,30 +310,30 @@ pmps09,Magic Premiere Shop 2009
 g09,Judge Gift Cards 2009
 p09,Magic Player Rewards 2009
 f09,Friday Night Magic 2009
-tdd2,Duel Decks: Jace vs. Chandra Tokens
 dd2,Duel Decks: Jace vs. Chandra
+tdd2,Duel Decks: Jace vs. Chandra Tokens
 pdd2,Duel Decks: Jace vs. Chandra Japanese Promos
 ala,Shards of Alara
 tala,Shards of Alara Tokens
 pwpn,Wizards Play Network 2008
 me2,Masters Edition II
 drb,From the Vault: Dragons
-teve,Eventide Tokens
 eve,Eventide
-tshm,Shadowmoor Tokens
+teve,Eventide Tokens
 shm,Shadowmoor
+tshm,Shadowmoor Tokens
 p15a,15th Anniversary Cards
 plpa,Launch Parties
 tmor,Morningtide Tokens
 mor,Morningtide
 pmps08,Magic Premiere Shop 2008
 pg08,Gateway 2008
-f08,Friday Night Magic 2008
-p08,Magic Player Rewards 2008
 g08,Judge Gift Cards 2008
+p08,Magic Player Rewards 2008
+f08,Friday Night Magic 2008
 dd1,Duel Decks: Elves vs. Goblins
-tlrw,Lorwyn Tokens
 lrw,Lorwyn
+tlrw,Lorwyn Tokens
 med,Masters Edition
 psum,Summer of Magic
 10e,Tenth Edition
@@ -344,8 +346,8 @@ plc,Planar Chaos
 pres,Resale Promos
 pg07,Gateway 2007
 pmps07,Magic Premiere Shop 2007
-f07,Friday Night Magic 2007
 g07,Judge Gift Cards 2007
+f07,Friday Night Magic 2007
 p07,Magic Player Rewards 2007
 hho,Happy Holidays
 tsp,Time Spiral
@@ -359,8 +361,8 @@ gpt,Guildpact
 pal06,Arena League 2006
 pmps06,Magic Premiere Shop 2006
 pjas,Junior APAC Series
-p06,Magic Player Rewards 2006
 pgtw,Gateway 2006
+p06,Magic Player Rewards 2006
 phuk,Hachette UK
 f06,Friday Night Magic 2006
 g06,Judge Gift Cards 2006
@@ -373,18 +375,10 @@ pmps,Magic Premiere Shop 2005
 pal05,Arena League 2005
 pjse,Junior Series Europe
 f05,Friday Night Magic 2005
-g05,Judge Gift Cards 2005
 p05,Magic Player Rewards 2005
+g05,Judge Gift Cards 2005
 unh,Unhinged
 chk,Champions of Kamigawa
-wcd,World Championship Decks 1997
-wc98,World Championship Decks 1998
-wc99,World Championship Decks 1999
-wc00,World Championship Decks 2000
-wc01,World Championship Decks 2001
-wc02,World Championship Decks 2002
-wc03,World Championship Decks 2003
-wc04,World Championship Decks 2004
 5dn,Fifth Dawn
 dst,Darksteel
 pal04,Arena League 2004
@@ -392,34 +386,38 @@ p04,Magic Player Rewards 2004
 f04,Friday Night Magic 2004
 g04,Judge Gift Cards 2004
 mrd,Mirrodin
+wc03,World Championship Decks 2003
 8ed,Eighth Edition
 prel,Release Events
 scg,Scourge
 lgn,Legions
 pal03,Arena League 2003
-g03,Judge Gift Cards 2003
 p03,Magic Player Rewards 2003
 ovnt,Vintage Championship
 f03,Friday Night Magic 2003
+g03,Judge Gift Cards 2003
 ons,Onslaught
+wc02,World Championship Decks 2002
 prm,Magic Online Promos
 jud,Judgment
 tor,Torment
 pal02,Arena League 2002
-g02,Judge Gift Cards 2002
 f02,Friday Night Magic 2002
+g02,Judge Gift Cards 2002
 pr2,Magic Player Rewards 2002
 dkm,Deckmasters
 ody,Odyssey
+wc01,World Championship Decks 2001
 apc,Apocalypse
 7ed,Seventh Edition
 pls,Planeshift
 pal01,Arena League 2001
+mpr,Magic Player Rewards 2001
 g01,Judge Gift Cards 2001
 f01,Friday Night Magic 2001
-mpr,Magic Player Rewards 2001
 inv,Invasion
 btd,Beatdown Box Set
+wc00,World Championship Decks 2000
 pcy,Prophecy
 s00,Starter 2000
 nem,Nemesis
@@ -452,8 +450,8 @@ jgp,Judge Gift Cards 1998
 tmp,Tempest
 ppre,Prerelease Events
 wth,Weatherlight
-ppod,Portal Demo Game
 pvan,Vanguard Series
+ppod,Portal Demo Game
 por,Portal
 5ed,Fifth Edition
 vis,Visions
@@ -479,9 +477,9 @@ leg,Legends
 atq,Antiquities
 phpr,HarperPrism Book Promos
 pdrc,Dragon Con
-cei,Intl. Collector’s Edition
+cei,Intl. Collectors’ Edition
+ced,Collectors’ Edition
 arn,Arabian Nights
-ced,Collector’s Edition
 2ed,Unlimited Edition
 leb,Limited Edition Beta
 lea,Limited Edition Alpha

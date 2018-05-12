@@ -28,28 +28,23 @@ add_set_name <- function( conn, set_name, set_code){
    dbSendQuery( conn, q)
 }
 
-add_print <- function( conn, card_name, set_code, cnum, promo ){
+add_print <- function( conn, card_name, set_code, cnum){
    #print( card_name)
    #print( set_code )
    card_name <- paste0( '"', card_name, '"' )
    set_code <- paste0( '"', set_code, '"')
-   q1 <- paste( 'SELECT (SELECT CardID FROM all_cards',
-                'WHERE CardName =', card_name,
-                ') as CardID,(SELECT SetID FROM all_sets',
-                'WHERE SetCode =', set_code,
-                ') as SetID' )
-   #print( q1 )
-   sq1 <- dbSendQuery( conn, q1 )
-   d1 <- fetch( sq1 )
-   q2 <- paste( 'INSERT INTO all_prints ( SetID, CardID, CNumber, Promo)',
+   cnum <- paste0( '"', cnum, '"')
+
+   q2 <- paste( 'INSERT INTO all_prints ( SetID, CardID, CNumber)',
                 'SELECT',
                 '(SELECT SetID from all_sets WHERE SetCode = ', set_code,
                 '),(SELECT CardID from all_cards WHERE CardName =', card_name,
-                '),', cnum,',', promo,
+                '),', cnum,
                 'WHERE NOT EXISTS ( SELECT * FROM all_prints',
                 'WHERE SetID = (SELECT SetID from all_sets WHERE SetCode =', set_code,
                 ') AND CardID = (SELECT CardID from all_cards WHERE CardName =', card_name,
-                ') AND CNumber =', cnum, 'AND Promo =', promo, ');' )
+                ') AND CNumber =', cnum, ');' )
+   #print( q2)
    dbSendQuery( conn, q2 )
 }
 
@@ -87,10 +82,13 @@ add_set_prints <- function( conn, set_code ){
          
          x[2] <- set_code
          cn <- card$collector_number
-         x[3] <- gsub( '\\D', '', cn, perl=F)
-         x[4] <- as.integer(length(grep( '\\D', cn, perl=F)) >0)
+         if( iconv(cn, to = "ASCII//TRANSLIT") != cn ){
+            cn <- gsub( '\\D', 'q', cn, perl=F)
+         }
+
+         x[3] <- cn
          
-         add_print( conn, x[1], x[2], x[3], x[4] )
+         add_print( conn, x[1], x[2], x[3] )
       }
       if ( page$has_more == F ){
          end <- T
@@ -136,9 +134,11 @@ update_sets <- function(){
       set_data[1] <- aset$code
       set_data[2] <- aset$name
       
-      api_sets[[i]] <- set_data
+      if ( aset$card_count > 0){
+         api_sets[[length(api_sets)+1]] <- set_data
+      }
    }
-   api_sets <- data.frame( matrix( unlist(api_sets), nrow=length(data_json), byrow =T) )
+   api_sets <- data.frame( matrix( unlist(api_sets), nrow=length(api_sets), byrow =T) )
    colnames(api_sets) <- c( 'SetCode','SetName')
    
    local_sets <- read.csv( 'mtg-database/data_prep/set_names.csv' )
@@ -174,11 +174,9 @@ update_sets <- function(){
 
 update_sets()
 # SELECT statement isnt 
-
+# 
 # conn <- connect()
-# 
-# add_set_name( conn, 'unh' )
-# 
+# add_print( conn, 'Old Fogey', 'unh', '106q' )
 # dbDisconnect( conn )
 
 #nchar("Duel Decks Anthology: Divine vs. Demonic Tokens")
