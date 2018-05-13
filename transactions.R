@@ -254,9 +254,6 @@ empty_table <- function( table ){
    dbDisconnect( conn )
 }
 
-
-
-
 create_binder <- function(title_name, short_name, table_name){
    # Open Binder
    binders <- list.load( 'mtg-database/binders.rdata') 
@@ -306,4 +303,24 @@ delete_binder <- function(table_name){
       
    }
    
+}
+
+find_sets <- function( card_name ){
+   card_name <- paste0('"', card_name, '"')
+   q <- paste( "SELECT SetName, CNumber FROM all_prints as p",
+               "JOIN all_cards AS c ON c.CardID = p.CardID",
+               "JOIN all_sets as s ON s.SetID = p.SetID",
+               "WHERE CardName =", card_name, ";" )
+   conn <- connect()
+   data <- fetch( dbSendQuery( conn, q ) )
+   dbDisconnect( conn )
+   return( data )
+}
+
+format_set_list <- function( df_sets ){
+   out <- c( df_sets$SetName[1] )
+   for (i in 2:nrow(df_sets)){
+      out <- c( out, '\n', df_sets$SetName[i] )
+   }
+   return( out )
 }

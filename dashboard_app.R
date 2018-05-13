@@ -13,6 +13,11 @@ dashboard <- function(){
             
             br(),
             wellPanel(
+               textInput( 'findme', 'Card Name'),
+               actionButton( 'find_sets', "Find Sets" ),
+               tableOutput( 'foundem' )
+            ),
+            wellPanel(
                # Operation of Edit Table
                actionButton("clear", "Clear Input Table"),
                checkboxInput('ac_name',"Autocorrect Name"),
@@ -85,6 +90,8 @@ dashboard <- function(){
       dbDisconnect( conn )
       values[["active"]] <- ''
       
+      suggested <- reactiveValues()
+      
       # Edit table functionality to recognize user changes
       observe({
          if (!is.null(input$hot)) {
@@ -141,6 +148,14 @@ dashboard <- function(){
       
       ## Various Buttons =================================================
       
+      # Find sets the card is in
+      observeEvent( input$find_sets, {
+         output$foundem <- renderTable({
+            find_sets( input$findme )
+         })
+      })
+      
+      
       # Clear Edit Table
       observeEvent( input$clear, {
          values[["DF"]] <- empty
@@ -196,7 +211,7 @@ dashboard <- function(){
       lapply( binders, function(X){
          observeEvent( input[[paste0( 'em_', X$short )]], {
             conn <- connect()
-            empty_binder( conn, X$short )
+            empty_binder( conn, X$table )
             values[[X$short]] <- binder_to_short( conn, X$table )
             dbDisconnect(conn )
          })

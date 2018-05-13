@@ -23,3 +23,6 @@ source( 'mtg-database/init_script.R' )
 #create_binder( 'Held Playsets', 'held', 'held_binder')
 
 dashboard()
+# 
+# find_sets( 'Griselbrand' )
+# cat( format_set_list( find_sets( 'Griselbrand' ) ) )
