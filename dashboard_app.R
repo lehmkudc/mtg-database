@@ -106,15 +106,15 @@ dashboard <- function(){
       output$hot <- renderRHandsontable({
          DF <- values[["DF"]]
          if( !is.null(DF) ){
-            base <- rhandsontable(DF, useTypes = T, stretchH='all')
-            #base
-            hot_context_menu( base, allowRowEdit = FALSE, allowColEdit = FALSE)
-            hot_col( base, col='Price', readOnly = T)
-            hot_col( base, col='Fresh', readOnly = T)
+            base <- rhandsontable(DF, useTypes = T, stretchH='all') %>%
+            hot_context_menu( allowRowEdit = FALSE, allowColEdit = FALSE) %>%
+            hot_col( col='Price', readOnly = T) %>%
+            hot_col( col='Fresh', readOnly = T)
             if (input$ac_name & input$ac_set){
-               hot_col(base, col='CardName', type ='autocomplete',
-                       source = name_source, strict = T)
-               hot_col(base, col='SetName', type ='autocomplete',
+               base %>%
+               hot_col( col='CardName', type ='autocomplete',
+                       source = name_source, strict = T) %>%
+               hot_col( col='SetName', type ='autocomplete',
                        source = set_source, strict = T)
             } else if (input$ac_name & !input$ac_set) {
                hot_col(base, col='CardName', type ='autocomplete',
@@ -123,7 +123,7 @@ dashboard <- function(){
                hot_col(base, col='SetName', type ='autocomplete',
                        source = set_source, strict = T)
             } else {
-            base
+               base
             }
          }
       })
