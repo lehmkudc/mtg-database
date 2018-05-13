@@ -149,6 +149,7 @@ binder_to_edit <- function( conn, binder ){
 short_to_binder <- function( df_short, binder ){
    # Take a decklists and import the data to a chosen binder by
    #    Using the loading zone
+   print( df_short )
    df_long <- short_to_long( df_short )
    conn <- connect()
    load_all( conn, df_long )
@@ -178,23 +179,22 @@ kill_connections <- function(){
    dbDisconnect(conn)
 }
 
-get_card <- function( set_code, cnumber, promo){
-   star <- ifelse( promo == 1, '%E2%98%85', '')
+get_card <- function( set_code, cnumber){
+   cnumber <- gsub( 'q', '%E2%98%85', cnumber )
    url <- paste0( "https://api.scryfall.com/cards/",
-                  set_code, "/", cnumber, star )
+                  set_code, "/", cnumber )
    card <- fromJSON( file = url )
    return( card )
 }
 
 get_locator <- function( print_id ){
    conn <- connect()
-   aq <- paste( "SELECT SetCode, CNumber, Promo FROM all_prints AS p",
+   aq <- paste( "SELECT SetCode, CNumber FROM all_prints AS p",
                 "JOIN all_sets AS s ON p.SetID = s.SetID",
                 "WHERE PrintID =", print_id )
    locator <- fetch( dbSendQuery( conn, aq ) )[1,]
    locator <- list( set_code = locator$SetCode,
-                    cnumber = locator$CNumber,
-                    promo = locator$Promo)
+                    cnumber = locator$CNumber)
    dbDisconnect( conn )
    return( locator )
 }
@@ -212,7 +212,7 @@ get_stale <- function( binder ){
 
 get_price <- function( print_id, mult ){
    locator <- get_locator( print_id )
-   card <- get_card( locator$set_code, locator$cnumber, locator$promo )
+   card <- get_card( locator$set_code, locator$cnumber )
    p <- card$usd
    price <- as.numeric(p)
    return( price )
@@ -232,7 +232,7 @@ update_prices <- function(binder){
    stale <- get_stale( binder )
    if( nrow( stale ) > 0){
       for ( i in 1:nrow(stale) ){
-         price <- get_price( stale$PrintID[i], 0, 1 )
+         price <- get_price( stale$PrintID[i], 1 )
          update_card_price( binder, colnames( stale )[1], 
                             stale[i,1], price )
       }

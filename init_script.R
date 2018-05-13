@@ -7,7 +7,7 @@ library(rhandsontable)
 library(rlist)
 
 empty <- data.frame( QTY=as.integer(0), CardName=rep('',20), 
-                     SetName = rep('',20), Cnumber=rep('',20),
+                     SetName = rep('',20), CNumber=rep('',20),
                      Notes = rep('',20), Mult=rep(1,20),
                      Price = rep(0,20), Fresh=rep('2010-01-01',20) )
 
