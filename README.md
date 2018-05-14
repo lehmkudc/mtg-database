@@ -35,40 +35,43 @@ These transactions are funcitons in R that create a query in SQL that implements
 Ideally, The database can be maintained and edited by the user with __only__ the RShiny App.
 
 ## Q: How do you run the app?
-A: Currently, the app is only able to be run on my laptop for mySQL permissions sake. The file only_app.R once sourced opens the app. 
+A: Currently, the app is only able to be run on my laptop for mySQL permissions sake. The function dashboard() opens the app. 
 It sources my: 
+* init_script.R file which loads the below R scripts, various dataframes and environment information that is used in the app, etc.
 * transaction_functions.R file which holds my r code for interacitng with SQL directly
 * app_functions.R file which holds the nitty-gritty code for the app in question, as well as some useful constants.
 * config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
 
 ## Q: What does your app look like?
-A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](app_screenshot.png)
+A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](dashboard_screenshot.jpg)
 
 ## Q: What can you do with the app?
 A: Currently:
 * Add cards to the Input table and add all of them to the desired binder. You may toggle autocompletion for card name and set name.
+* Look up all sets that contain a card with a specified name.
 * Clear the table all at once.
 * Go into "edit mode" by selecting a binder, editing certain fields of the data table, and then committing those changes. 
 if the input table is accidentally deleted, the changes are not committed.
-* View the current quantities of cards in each of 3 binders.
+* View the current quantities of cards in each binder
 * Empty all cards in a given binder (soon to be discontinued)
+* Update card prices
 
 ## Q: What is your database Schema?
 A: Binders are their own tables where individual cards are stored (importantly not quantity like the app would suggest).  
-THere is a "loading_zone" where card information is temporarily stored before being loaded into a binder. While this is in 
-general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.  
-![Here's a Diagram](db_schema.png)
+There is a "loadzone" where card information is temporarily stored before being loaded into a binder. While this is in 
+general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.
+Card existence information is divvied up into 3 lookup tables: all_cards, all_sets, and all_prints. All cards labels every single card name used in magic the gathering. all_sets labels every set used in magic the gathering, as well as its set code. All prints refers to every card printed in magic (some card names have many different printings with different prices) as well as their collectors number (important for looking up prices).
+![Here's a Diagram](schema.png)
 
 ## Q: What do you plan on implementing in the future?
 A: Quite a lot:
-* Using Scryfall API to access approximate price of cards. This requires adding some sort of caching measure to store known prices for the day.
 * Getting a version of the App accessible to the web for demonstration purposes.
-* Creating a "Binder View" app that cleanly displays images of the cards as well as their prices.
+* Creating a "Binder View" app that cleanly displays images of the cards as well as their prices as if it were a physical binder of cards.
 * Creating a "Cost to Complete" app that determines the cards as well as their price that are required to finish a deck based
 on what cards are available in play and trade binders.
 * Creating a "Trade Table" app that keeps track of prices of desired cards in both sides of a trade.
 
-## Q: I like your work! How can I contact you for professional work?
+## Q: I like your work! How can I contact you for professional stuff?
 A: Thank you so much! My business email is LEHMKUDC@gmail.com. I am currently seeking full-time employment in a large metro area either as a long-term employee or as an Intern. I am always happy to have a chat with other folks who enjoy this type of thing even if it's not
 directly discussing employment.
 
