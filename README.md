@@ -43,7 +43,7 @@ It sources my:
 * config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
 
 ## Q: What does your app look like?
-A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](dashboard_screenshot.png)
+A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](dashboard_screenshot.jpg)
 
 ## Q: What can you do with the app?
 A: Currently:
