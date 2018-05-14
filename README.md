@@ -43,7 +43,7 @@ It sources my:
 * config.R which holds my username, password, database name, and IP_address of the server (NOT INCLUDED IN GITHUB FOR SECURITY PURPOSES)
 
 ## Q: What does your app look like?
-A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](app_screenshot.png)
+A: Its not pretty at the moment, since I'm mostly concerned on it working. ![Like this!](dashboard_app.png)
 
 ## Q: What can you do with the app?
 A: Currently:
@@ -61,7 +61,7 @@ A: Binders are their own tables where individual cards are stored (importantly n
 There is a "loadzone" where card information is temporarily stored before being loaded into a binder. While this is in 
 general more tables than necessary, it aids significantly in debugging and results in simpler SQL queries in the long run.
 Card existence information is divvied up into 3 lookup tables: all_cards, all_sets, and all_prints. All cards labels every single card name used in magic the gathering. all_sets labels every set used in magic the gathering, as well as its set code. All prints refers to every card printed in magic (some card names have many different printings with different prices) as well as their collectors number (important for looking up prices).
-![Here's a Diagram](db_schema.png)
+![Here's a Diagram](schema.png)
 
 ## Q: What do you plan on implementing in the future?
 A: Quite a lot:
