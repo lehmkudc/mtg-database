@@ -23,14 +23,6 @@ dashboard <- function(){
                checkboxInput('ac_name',"Autocorrect Name"),
                checkboxInput('ac_set',"Autocorrect Set", value=T)
             ),
-            # Loading Buttons
-            wellPanel(
-               h3("Load into Binders"), 
-               lapply( binders, function(X){
-                  actionButton( paste0( 'to_', X$short), 
-                                paste0( 'To ', X$title) )
-               })
-            ),
             # Editing Buttons
             wellPanel(
                h3("Edit Binders "),
@@ -64,7 +56,11 @@ dashboard <- function(){
          mainPanel(
             wellPanel(
                h3( 'Editing Table' ),
-               rHandsontableOutput("hot")
+               rHandsontableOutput("hot"),
+               lapply( binders, function(X){
+                  actionButton( paste0( 'to_', X$short), 
+                                paste0( 'To ', X$title) )
+               })
             ),
             lapply( binders, function(X) {
                wellPanel(
