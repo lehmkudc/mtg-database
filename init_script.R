@@ -1,10 +1,12 @@
 rm( list = ls() )
 
+options(stringsAsFactors = FALSE)
 library(magrittr)
 library(shiny)
 library(RMySQL)
 library(rhandsontable)
 library(rlist)
+library(rjson)
 
 empty <- data.frame( QTY=as.integer(0), CardName=rep('',20), 
                      SetName = rep('',20), CNumber=rep('',20),
