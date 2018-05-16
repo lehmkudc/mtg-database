@@ -61,36 +61,116 @@ virtual_binder <- function( binder ){
    
    ui <- fluidPage(
       
-      lapply( 1:N, function(i){
-         img( src = get_full( v_data$SetCode[i], v_data$CNumber[i]) )
-         
-         
-      }),
+      imageOutput( "bolt" ),
       
-      lapply( 1:N, function(i){
-         imageOutput( get_label(v_data$SetCode[i], v_data$CNumber[i]) )
-         #h3(paste( 'QTY:', v_data$QTY[i]) )
+      apply( v_data, 1, function(x){
+         wellPanel(
+            h3( paste0(x[2], '_', x[3] ) ),
+            imageOutput( paste0(x[2], '_', x[3] ) )
+            #h3(paste( 'QTY:', v_data$QTY[i]) )
          #br()
+         )
       })
       
    )
    
    server <- function(input, output){
       
-      lapply( 1:N, function(i){
-         output[[get_label(v_data$SetCode[i], v_data$CNumber[i])]] <- renderImage({
-            full <- get_full(v_data$SetCode[i], v_data$CNumber[i] )
-            label <- get_label(v_data$SetCode[i], v_data$CNumber[i])
-                             
-            list( src = full,
-                  alt = label )
-         }, deleteFile = F )
+      file_name <- normalizePath( file.path( 'mtg-database/cached_images',
+                                             paste0('bolt', '_', 'a25', '.jpg') ) )
+      output[["bolt"]] <- renderImage({
+         list( src = file_name,
+               alt='bolt') 
+      }, deleteFile = F)
+      
+      apply( v_data, 1, function(x){
+         output[[paste0(x[2],'_',x[3])]] <- renderImage({
+            name <- normalizePath( file.path( 'mtg-database/cached_images',
+                                             paste0(x[2], '_', x[3], '.jpg')))
+            label <- paste0( x[2],'_',x[3] )
+            return(list( src=name,alt=label))}, deleteFile=F)
       })
       
-      
+      # lapply( 1:N, function(i){
+      #    output[[paste0(v_data$SetCode[i],'_',v_data$CNumber[i])]] <- renderImage({
+      #       
+      #       name <- normalizePath( file.path( 'mtg-database/cached_images',
+      #                                         paste0( v_data$SetCode[i],'_',v_data$CNumber[i],'.jpg' ) ) )
+      #       label <- paste0(v_data$SetCode[i],'_',v_data$CNumber[i])
+      #       print( name)
+      #       print( label )
+      # 
+      #       list( src = name,
+      #             alt = label )
+      #    }, deleteFile = F )
+      # })
    }
 
    shinyApp(ui=ui, server=server)
+}
+
+
+v_b2 <- function( binder ){
+   
+   update_cache( binder )
+   v_data <- get_v_data( binder )
+   N <- nrow( v_data )
+   
+   
+   ui <- fluidPage(
+      sidebarLayout(
+         sidebarPanel(
+            fileInput( inputId = 'files',
+                       label = 'select and Image',
+                       multiple = TRUE,
+                       accept = c('image/png','image/jpeg'))
+         ),
+         mainPanel( 
+            tableOutput( 'files' ),
+            uiOutput( 'image')
+         )
+      )
+   )
+      
+   server <- function( input, output, session){
+      output$files <- renderTable( input$files )
+      
+      files <- reactive({
+         files <- input$files
+         #files$datapath <- gsub
+         files
+      })
+      
+      output$images <- renderUI({
+         image_output_list <- 
+            lapply( 1:nrow( files()),
+                    function( i )
+                    {
+                       imagename = paste0(v_data$SetCode[i], '_', v_data$CNumber[i] )
+                       imageOutput( imagename )
+                    })
+         do.call( tagList, image_output_list )
+      })
+      
+      observe({
+         for (i in 1:nrow(files()))
+         {
+            print( i )
+            local({
+               my_i <- i
+               imagename =  paste0(v_data$SetCode[i], '_', v_data$CNumber[i] )
+               print(imagename)
+               output[[imagename]] <- 
+                  renderImage({
+                     list( src = files()$datapath[my_i],
+                           alt = 'Image failed to render')
+                  }, deleteFile = F )
+            })
+         }
+      })
+   }
+         
+   shinyApp( ui = ui, server = server )
 }
 
 only_bolt <- function(){
@@ -114,12 +194,14 @@ only_bolt <- function(){
    
 }
 
+v_b2( 'held_binder' )
+
 #card_img_url( 'unh','106q')
 
 #binder_cards <- get_v_data( 'held_binder' )
 
 #update_cache( 'held_binder' )
 
-virtual_binder( 'held_binder' )
+#( 'held_binder' )
 
 #only_bolt()
