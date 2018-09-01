@@ -29,4 +29,4 @@ kill_connections()
 DF <- empty
 
 
-
+dashboard()
